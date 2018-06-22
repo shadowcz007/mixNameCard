@@ -2,18 +2,30 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
+    <meta charset="utf-8">
+    <meta name="apple-moblie-web-app-capable" content="yes">
+    <meta name="viewport" content="initial-scale=1,maximum-scale=1,minimum-scale=1,user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <title>MIXLAB-NAME-CARD</title>
     <script src="https://cdn.bootcss.com/fabric.js/2.3.0/fabric.min.js"></script>
     <style>
+        body{
+            background: #eee;
+            padding: 0;
+            margin: 0;
+        }
         input {
             height: 44px;
             outline: 1px solid gray;
             display: flex;
             margin: 24px;
             border: none;
+            background: white;
+            font-size: 1.2em;
+            font-weight: 300;
+            width: 70%;
+              padding: 0.5em;
+
         }
 
 
@@ -21,48 +33,94 @@
             outline: 1px solid gray;
             display: flex;
             border: none;
+ 
+            margin: 24px;
+            padding: 0.5em;
+            background: white;
+            font-size: 1.2em;
+            font-weight: 300;
+            width: 70%;
+
         }
 
+        #input {
+            position: absolute;
+            left: 0;
+            padding: 2em;
+            background: #eee;
+            height: 100%;
+            width: 100%;
+        }
 
         #main {
-            margin-top: 98px;
+
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 12;
+            display: none;
+            background: black;
         }
 
 
-        #main img {
-            width: 300px !important;
-            height: auto !important;
-            margin: 24px;
-        }
+
 
         .btn {
             width: 98px;
-            height: 44px;
+            height: 56px;
             background: black;
             border: none;
             color: white;
+        }
+
+        #start {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            left: 0;
+            font-size: 1.2em;
+            font-weight: 300;
+            letter-spacing: 0.8em;
+            z-index: 99;
         }
     </style>
 </head>
 
 <body>
     <div id="input">
-        <input type="text" id="name" placeholder="姓名">
-        <input type="text" id="title" placeholder="职位／身份">
-        <p>头像</p>
-        <input type="file" id="avatar">
-        <textarea name="" id="detail" cols="30" rows="10" placeholder="个人详细介绍"></textarea>
-        <br>
-        <button class="btn" onclick="start();">START</button>
+            
+            <p style="font-weight:300;font-size:1.2em">头像</p>
+            <input type="file" id="avatar" style="outline: none">
+   
+            <p style="font-weight:300;font-size:1.2em">信息</p>
+            <input type="text" id="name" placeholder="姓名">
+            <input type="text" id="title" placeholder="职位／身份">
+        
+        
+          <textarea name="" id="detail" cols="20" rows="10" placeholder="个人详细介绍(选填）"></textarea>
+
+          <br><br><br><br>
+
+          <p>by MIXLAB</p>
+
     </div>
+    <button class="btn" onclick="start();" id="start">生成名片</button>
     <div id="main"></div>
 </body>
 
 <script>
+    var isInput=true;
     var nameEl = document.getElementById('name'),
         titleEl = document.getElementById('title'),
         detailEl = document.getElementById('detail'),
         avatarEl = document.getElementById('avatar');
+
+        var startEl=document.getElementById('start');
+
+    var inputDiv = document.getElementById('input'),
+        mainDiv = document.getElementById('main');
 
     var avatar;
     avatarEl.addEventListener('change', handleFiles);
@@ -89,31 +147,54 @@
         //   console.log(src)
         var img = new Image();
         img.onload = function () {
-            smartcrop.crop(img, { width:400, height: 400 }).then(function(result) {
+            smartcrop.crop(img, {
+                width: 400,
+                height: 400
+            }).then(function (result) {
                 console.log(result);
-                var selectedCrop=result.topCrop;
-                var can=document.createElement('canvas'),
-                    c=can.getContext('2d');
-                    can.width=400;
-                    can.height=400;
-                    c.drawImage(img, selectedCrop.x, selectedCrop.y, selectedCrop.width,selectedCrop.height, 0, 0,
-                can.width, can.height);
-                var imgNew=new Image();
-                imgNew.src=can.toDataURL();
+                var selectedCrop = result.topCrop;
+                var can = document.createElement('canvas'),
+                    c = can.getContext('2d');
+                can.width = 400;
+                can.height = 400;
+                c.drawImage(img, selectedCrop.x, selectedCrop.y, selectedCrop.width, selectedCrop.height, 0,
+                    0,
+                    can.width, can.height);
+                var imgNew = new Image();
+                imgNew.src = can.toDataURL();
                 avatar = imgNew;
             });
 
-            
+
         };
         img.src = src;
     };
 
+    function start(){
+        if (isInput) {
+            create();
+            startEl.innerText='再做一张';
+        }else{
+            newInput();
+            startEl.innerText='生成名片';
+        };
+    };
 
-    function start() {
+    function newInput(){
+        isInput=true;
+        inputDiv.style.display = 'block';
+        mainDiv.style.display = 'none';
+    }
+
+    function create() {
+        isInput=false;
+        inputDiv.style.display = 'none';
+        mainDiv.style.display = 'block';
+
         var userInput = {
             name: nameEl.value,
             title: titleEl.value,
-            detail: detailEl.value||getWord(),
+            detail: detailEl.value || getWord(),
             avatar: avatar
         };
 
@@ -130,7 +211,7 @@
             //  console.log(obj)
 
             var objs = obj.getObjects();
-           // console.log(avatar)
+            // console.log(avatar)
             for (var i = 0; i < objs.length; i++) {
 
                 var id = objs[i].id;
@@ -199,6 +280,7 @@
             // console.log(canvas)
 
             var ImageRes = new Image();
+            ImageRes.style.width = "100%";
             ImageRes.src = canvas.toDataURL();
             document.querySelector('#main').appendChild(ImageRes);
 
@@ -231,42 +313,42 @@
 
 
     function getWord() {
-        var words = ["如果你要成功，你应该朝新的道路前进，不要跟随被踩烂了的成功之路。", 
-        "创新思想不是那些专门从事开发创新思想的人的专有领地。", 
-        "已经创造出来的东西比起有待创造的东西来说，是微不足道的。",
+        var words = ["如果你要成功，你应该朝新的道路前进，不要跟随被踩烂了的成功之路。",
+            "创新思想不是那些专门从事开发创新思想的人的专有领地。",
+            "已经创造出来的东西比起有待创造的东西来说，是微不足道的。",
             "我们要获得现有的一切，而且要创造现在还没有的新事物！",
-             "开始走第一步的人，也许他脚下穿的鞋子就是他最后穿的一双。",
-             "创新就是创造性地破坏。",
-            "非经自我发奋所得的创新，就不是真正的创新。", 
+            "开始走第一步的人，也许他脚下穿的鞋子就是他最后穿的一双。",
+            "创新就是创造性地破坏。",
+            "非经自我发奋所得的创新，就不是真正的创新。",
             "万事皆由人的意志创造。",
-             "唯有创造才是快乐。只有创造的生灵才是生灵。",
+            "唯有创造才是快乐。只有创造的生灵才是生灵。",
             "关键不在岁数，而在于创造力的大小。 ",
-             "创造时，目光要深；开辟时，目光要远。",
-           "打破规则不是孕育创意的必要条件，但确是一条路径。",
-             "可持续竞争的唯一优势来自于超过竞争对手的创新潜质。", 
+            "创造时，目光要深；开辟时，目光要远。",
+            "打破规则不是孕育创意的必要条件，但确是一条路径。",
+            "可持续竞争的唯一优势来自于超过竞争对手的创新潜质。",
             "天才的主要标记不是完美而是创造，天才能开创新的局面。",
             "有一件事情是十分清楚的：创新思想不是那些专门从事开发创新思想的人的专有领地。",
-             "没有创新，就不可能有合理的，尤其是有效的管理。",
+            "没有创新，就不可能有合理的，尤其是有效的管理。",
             "大凡实际接触过科学研究的人都知道，不肯超越事实的人很少会有成就。",
             "要创新需要一定的灵感，这灵感不是天生的，而是来自长期的积累与全身心的投入。没有积累就不会有创新。",
-            "异想天开给生活增加了一分不平凡的色彩，这是每一个青年和善感的人所必需的。", 
+            "异想天开给生活增加了一分不平凡的色彩，这是每一个青年和善感的人所必需的。",
             "有了精神的实验和观测作为研究的依据，想像力便成为自然科学理论的设计师。",
-            "在自然科学中，创立方法，研究某种重要的实验条件，往往要比发现个别事实更有价值。", 
+            "在自然科学中，创立方法，研究某种重要的实验条件，往往要比发现个别事实更有价值。",
             "我们要记着，作了茧的蚕，是不会看到茧壳以外的世界的。",
-            "每一条道路都应该走一走", 
+            "每一条道路都应该走一走",
             "距离已经消失，要么创新，要么死亡。",
             "独创常常在于发现两个或两人以上研究对象或设想之间的联系或相似之点。",
-             "非经自己努力所得的创新，就不是真正的创新。", 
-             "对于一个艺术家来说，如果能够打破常规，完全自由进行创作，其成绩往往会是惊人的。",
-            "一个具有天才的禀赋的人，绝不遵循常人的思维途径。", 
+            "非经自己努力所得的创新，就不是真正的创新。",
+            "对于一个艺术家来说，如果能够打破常规，完全自由进行创作，其成绩往往会是惊人的。",
+            "一个具有天才的禀赋的人，绝不遵循常人的思维途径。",
             "在创造家的事业中，每一步都要三思而后行，而不是盲目地瞎碰。",
-             "想出新办法的人在他的办法没有成功以前，人家总说他是异想天开。",
-            "凡能独立工作的人，一定能对自己的工作开辟一条新的路线。", 
-            "能正确地提出问题就是迈出了创新的第一步", 
-            "遇到难题时，我总是力求寻找巧妙的思路，出奇制胜。", 
+            "想出新办法的人在他的办法没有成功以前，人家总说他是异想天开。",
+            "凡能独立工作的人，一定能对自己的工作开辟一条新的路线。",
+            "能正确地提出问题就是迈出了创新的第一步",
+            "遇到难题时，我总是力求寻找巧妙的思路，出奇制胜。",
             "保守是舒服的产物。",
-            "对新的对象必须创出全新的概念", 
-            "如果你要成功，你应该朝新的道路前进，不要跟随被踩烂了的成功之路。", 
+            "对新的对象必须创出全新的概念",
+            "如果你要成功，你应该朝新的道路前进，不要跟随被踩烂了的成功之路。",
             "本来无望的事，大胆尝试，往往能成功。"
         ];
 
