@@ -89,7 +89,21 @@
         //   console.log(src)
         var img = new Image();
         img.onload = function () {
-            avatar = img;
+            smartcrop.crop(img, { width:400, height: 400 }).then(function(result) {
+                console.log(result);
+                var selectedCrop=result.topCrop;
+                var can=document.createElement('canvas'),
+                    c=can.getContext('2d');
+                    can.width=400;
+                    can.height=400;
+                    c.drawImage(img, selectedCrop.x, selectedCrop.y, selectedCrop.width,selectedCrop.height, 0, 0,
+                can.width, can.height);
+                var imgNew=new Image();
+                imgNew.src=can.toDataURL();
+                avatar = imgNew;
+            });
+
+            
         };
         img.src = src;
     };
@@ -115,11 +129,8 @@
 
             //  console.log(obj)
 
-
-
-
             var objs = obj.getObjects();
-            console.log(avatar)
+           // console.log(avatar)
             for (var i = 0; i < objs.length; i++) {
 
                 var id = objs[i].id;
@@ -271,5 +282,6 @@
 
     };
 </script>
+<script src="https://cdn.bootcss.com/smartcrop/2.0.3/smartcrop.min.js"></script>
 
 </html>
