@@ -9,6 +9,16 @@
     <title>MIXLAB-NAME-CARD</title>
     <script src="https://cdn.bootcss.com/fabric.js/2.3.0/fabric.min.js"></script>
     <style>
+
+        @font-face {
+            font-family: 'Noto-Light';
+            src: url('//at.alicdn.com/t/webfont_vycr3e6aggc.eot'); /* IE9*/
+            src: url('//at.alicdn.com/t/webfont_vycr3e6aggc.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
+            url('//at.alicdn.com/t/webfont_vycr3e6aggc.woff') format('woff'), /* chrome、firefox */
+            url('//at.alicdn.com/t/webfont_vycr3e6aggc.ttf') format('truetype'), /* chrome、firefox、opera、Safari, Android, iOS 4.2+*/
+            url('//at.alicdn.com/t/webfont_vycr3e6aggc.svg#思源黑体-极细') format('svg'); /* iOS 4.1- */
+        }
+
         body {
             background: #eee;
             padding: 0;
@@ -278,8 +288,9 @@
                             fill: 'white',
                             left: objs[i].left,
                             top: objs[i].top,
-                            fontSize: objs[i].height,
-                            fontFamily: 'monospace'
+                            fontSize: objs[i].height*1.1,
+                            fontFamily: 'Noto-Light',
+                            fontWeight: 700,
                         });
                         obj.add(text);
                     } else if (id == "title") {
@@ -290,10 +301,10 @@
                         var text = new fabric.Text(textNew, {
                             fill: 'white',
                             left: objs[i].left,
-                            top: objs[i].top,
-                            fontSize: objs[i].height * 0.8,
-                            fontFamily: 'monospace',
-                            fontWeight: 300
+                            top: objs[i].top+30,
+                            fontSize: objs[i].height * 0.6,
+                            fontFamily: 'Noto-Light',
+                            fontWeight: 100
                         });
                         obj.add(text);
                     } else if (id == "detail") {
@@ -306,14 +317,15 @@
                         var text = new fabric.Text(textNew, {
                             fill: 'white',
                             left: objs[i].left,
-                            top: objs[i].top,
+                            top: objs[i].top+30,
                             fontSize: fontSize,
                             width: objs[i].width,
-                            lineHeight: 1,
+                            lineHeight: 1.2,
                             textAlign: 'left',
-                            fontFamily: 'monospace',
+                            fontFamily: 'Noto-Light',
+                            fontStyle: 'Italic',
                             charSpacing: fontSize,
-                            fontWeight: 300
+                            fontWeight: 100
                         });
 
                         // console.log(text)
