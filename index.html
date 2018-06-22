@@ -9,11 +9,12 @@
     <title>MIXLAB-NAME-CARD</title>
     <script src="https://cdn.bootcss.com/fabric.js/2.3.0/fabric.min.js"></script>
     <style>
-        body{
+        body {
             background: #eee;
             padding: 0;
             margin: 0;
         }
+
         input {
             height: 44px;
             outline: 1px solid gray;
@@ -24,7 +25,7 @@
             font-size: 1.2em;
             font-weight: 300;
             width: 70%;
-              padding: 0.5em;
+            padding: 0.5em;
 
         }
 
@@ -33,7 +34,7 @@
             outline: 1px solid gray;
             display: flex;
             border: none;
- 
+
             margin: 24px;
             padding: 0.5em;
             background: white;
@@ -61,7 +62,7 @@
             height: 100%;
             z-index: 12;
             display: none;
-             
+
             text-align: center;
         }
 
@@ -86,63 +87,81 @@
             letter-spacing: 0.8em;
             z-index: 99;
         }
-        #loading{
+
+        #loading {
             position: fixed;
-            top:0;
-            left:0;
+            top: 0;
+            left: 0;
             width: 100%;
             height: 100%;
             display: none;
             z-index: 199;
             background: black;
         }
-        #loading h4{
+
+        #loading h4 {
             color: white;
             font-weight: 300;
             font-size: 2em;
             text-align: center;
             margin-top: 2em;
-        };
+            animation: colorsAni 0.5s infinite;
+        }
+
+ 
+
+        @keyframes colorsAni {
+            from {
+                opacity:0;
+            }
+            to {
+                opacity:1;
+            }
+        }
     </style>
 </head>
 
 <body>
     <div id="input">
-            
-            <p style="font-weight:300;font-size:1.2em">头像</p>
-            <input type="file" id="avatar" style="outline: none">
-   
-            <p style="font-weight:300;font-size:1.2em">信息</p>
-            <input type="text" id="name" placeholder="姓名">
-            <input type="text" id="title" placeholder="职位／身份">
-        
-        
-          <textarea name="" id="detail" cols="20" rows="10" placeholder="个人详细介绍(选填）"></textarea>
 
-          <br><br><br><br>
+        <p style="font-weight:300;font-size:1.2em">头像</p>
+        <input type="file" id="avatar" style="outline: none">
 
-          <p>by MIXLAB</p>
+        <p style="font-weight:300;font-size:1.2em">信息</p>
+        <input type="text" id="name" placeholder="姓名">
+        <input type="text" id="title" placeholder="职位／身份">
+
+
+        <textarea name="" id="detail" cols="20" rows="10" placeholder="个人详细介绍(选填）"></textarea>
+
+        <br>
+        <br>
+        <br>
+        <br>
+
+        <p>by MIXLAB</p>
 
     </div>
     <button class="btn" onclick="start();" id="start">生成名片</button>
 
     <div id="loading">
-            <h4  >Loading</h4>
+        <h4>Loading</h4>
     </div>
     <div id="main">
-        
+
 
     </div>
 </body>
 
 <script>
-    var isInput=true;
+    var isInput = true;
     var nameEl = document.getElementById('name'),
         titleEl = document.getElementById('title'),
         detailEl = document.getElementById('detail'),
         avatarEl = document.getElementById('avatar');
 
-        var startEl=document.getElementById('start'),loadingEl=document.getElementById('loading');
+    var startEl = document.getElementById('start'),
+        loadingEl = document.getElementById('loading');
 
     var inputDiv = document.getElementById('input'),
         mainDiv = document.getElementById('main');
@@ -173,10 +192,10 @@
         var img = new Image();
         img.onload = function () {
             smartcrop.crop(img, {
-                width: 400,
-                height: 400
+                width: 240,
+                height: 240
             }).then(function (result) {
-                console.log(result);
+               // console.log(result);
                 var selectedCrop = result.topCrop;
                 var can = document.createElement('canvas'),
                     c = can.getContext('2d');
@@ -195,32 +214,32 @@
         img.src = src;
     };
 
-    function start(){
+    function start() {
         if (isInput) {
             create();
-            startEl.innerText='再做一张';
-        }else{
+            startEl.innerText = '再做一张';
+        } else {
             newInput();
-            startEl.innerText='生成名片';
+            startEl.innerText = '生成名片';
         };
     };
 
-    function newInput(){
-        isInput=true;
+    function newInput() {
+        isInput = true;
         inputDiv.style.display = 'block';
         mainDiv.style.display = 'none';
-        mainDiv.innerHTML='';
+        mainDiv.innerHTML = '';
     }
 
     function create() {
-        isInput=false;
+        isInput = false;
         inputDiv.style.display = 'none';
         mainDiv.style.display = 'block';
         loadingEl.style.display = 'block';
 
         var userInput = {
-            name: nameEl.value,
-            title: titleEl.value,
+            name: nameEl.value||'Infinity Learner',
+            title: titleEl.value||'社区成员',
             detail: detailEl.value || getWord(),
             avatar: avatar
         };
@@ -243,7 +262,7 @@
 
                 var id = objs[i].id;
                 if (userInput[id]) {
-                    console.log(objs[i].height);
+                  //  console.log(objs[i].height);
                     if (id == 'name') {
                         var text = new fabric.Text(userInput[id].slice(0, 12), {
                             fill: 'white',
@@ -289,13 +308,13 @@
 
                         // console.log(text)
                         obj.add(text);
-                    } else if (id == 'avatar') {
+                    } else if (id == 'avatar' && userInput.avatar) {
                         var imgInstance = new fabric.Image(userInput.avatar, {
                             left: objs[i].left,
                             top: objs[i].top,
                             width: objs[i].width
                         });
-                        console.log(imgInstance)
+                     //   console.log(imgInstance)
                         obj.add(imgInstance);
                     };
 
@@ -308,12 +327,16 @@
 
             var ImageRes = new Image();
             ImageRes.style.height = "70%";
-            ImageRes.style.marginTop="2em";
-   
+            ImageRes.style.marginTop = "2em";
+
             ImageRes.src = canvas.toDataURL();
-            
+
             mainDiv.appendChild(ImageRes);
-            loadingEl.style.display="none";
+            var p = document.createElement('p');
+            p.innerText = 'BY MIXLAB';
+            p.style.fontWeight = '300';
+            mainDiv.appendChild(p);
+            loadingEl.style.display = "none";
 
         });
     };
