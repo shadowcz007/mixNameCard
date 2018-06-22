@@ -166,7 +166,7 @@
     var inputDiv = document.getElementById('input'),
         mainDiv = document.getElementById('main');
 
-    var avatar;
+    var avatar=null;
     avatarEl.addEventListener('change', handleFiles);
 
     function handleFiles(files) {
@@ -308,7 +308,7 @@
 
                         // console.log(text)
                         obj.add(text);
-                    } else if (id == 'avatar' && userInput.avatar) {
+                    } else if (id == 'avatar' && userInput.avatar!=null) {
                         var imgInstance = new fabric.Image(userInput.avatar, {
                             left: objs[i].left,
                             top: objs[i].top,
