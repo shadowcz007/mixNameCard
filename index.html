@@ -169,6 +169,14 @@
     var avatar=null;
     avatarEl.addEventListener('change', handleFiles);
 
+
+    var userInputOld=localStorage.getItem('userInput')?JSON.parse(localStorage.getItem('userInput')):null;
+    
+    if (userInputOld!=null) {
+        nameEl.value=userInputOld.name;
+        titleEl.value=userInputOld.title;
+    };
+
     function handleFiles(files) {
         //  console.log(files)
         if (files.target.files.length > 0) {
@@ -243,6 +251,8 @@
             detail: detailEl.value || getWord(),
             avatar: avatar
         };
+
+        localStorage.setItem('userInput',JSON.stringify(userInput));
 
         var canvasEl = document.createElement('canvas');
         var canvas = new fabric.Canvas(canvasEl);
