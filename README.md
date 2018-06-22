@@ -1,2 +1,7 @@
 # mixNameCard
-by shadow
+
+
+by 
+shadow 
+FrankHsu https://github.com/winterx
+
