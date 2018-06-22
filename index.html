@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <script src="https://cdn.bootcss.com/fabric.js/2.3.0/fabric.min.js"></script>
+    <style>
+        input {
+            height: 44px;
+            outline: 1px solid gray;
+            display: flex;
+            margin: 24px;
+            border: none;
+        }
+
+
+        textarea {
+            outline: 1px solid gray;
+            display: flex;
+            border: none;
+        }
+
+
+        #main {
+            margin-top: 98px;
+        }
+
+
+        #main img {
+            width: 300px !important;
+            height: auto !important;
+            margin: 24px;
+        }
+
+        .btn {
+            width: 98px;
+            height: 44px;
+            background: black;
+            border: none;
+            color: white;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="input">
+        <input type="text" id="name" placeholder="姓名">
+        <input type="text" id="title" placeholder="职位／身份">
+        <p>头像</p>
+        <input type="file" id="avatar">
+        <textarea name="" id="detail" cols="30" rows="10" placeholder="个人详细介绍"></textarea>
+        <br>
+        <button class="btn" onclick="start();">START</button>
+    </div>
+    <div id="main"></div>
+</body>
+
+<script>
+    var nameEl = document.getElementById('name'),
+        titleEl = document.getElementById('title'),
+        detailEl = document.getElementById('detail'),
+        avatarEl = document.getElementById('avatar');
+
+    var avatar;
+    avatarEl.addEventListener('change', handleFiles);
+
+    function handleFiles(files) {
+        //  console.log(files)
+        if (files.target.files.length > 0) {
+            var file = files.target.files[0];
+            if (
+                typeof FileReader !== 'undefined' &&
+                file.type.indexOf('image') != -1
+            ) {
+                var reader = new FileReader();
+                // Note: addEventListener doesn't work in Google Chrome for this event
+                reader.onload = function (evt) {
+                    load(evt.target.result);
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+    };
+
+    function load(src) {
+        //   console.log(src)
+        var img = new Image();
+        img.onload = function () {
+            avatar = img;
+        };
+        img.src = src;
+    };
+
+
+    function start() {
+        var userInput = {
+            name: nameEl.value,
+            title: titleEl.value,
+            detail: detailEl.value||getWord(),
+            avatar: avatar
+        };
+
+        var canvasEl = document.createElement('canvas');
+        var canvas = new fabric.Canvas(canvasEl);
+
+        fabric.loadSVGFromURL('./name_card.svg', function (objects, options) {
+            var obj = fabric.util.groupSVGElements(objects, options);
+            canvas.setWidth(obj.width);
+            canvas.setHeight(obj.height);
+            canvas.setBackgroundColor('black');
+
+
+            //  console.log(obj)
+
+
+
+
+            var objs = obj.getObjects();
+            console.log(avatar)
+            for (var i = 0; i < objs.length; i++) {
+
+                var id = objs[i].id;
+                if (userInput[id]) {
+                    console.log(objs[i].height);
+                    if (id == 'name') {
+                        var text = new fabric.Text(userInput[id].slice(0, 12), {
+                            fill: 'white',
+                            left: objs[i].left,
+                            top: objs[i].top,
+                            fontSize: objs[i].height,
+                            fontFamily: 'monospace'
+                        });
+                        obj.add(text);
+                    } else if (id == "title") {
+
+                        var texts = userInput[id].slice(0, 24);
+                        var textNew = StringInsertByInterval(texts, '\n', 14);
+
+                        var text = new fabric.Text(textNew, {
+                            fill: 'white',
+                            left: objs[i].left,
+                            top: objs[i].top,
+                            fontSize: objs[i].height * 0.8,
+                            fontFamily: 'monospace',
+                            fontWeight: 300
+                        });
+                        obj.add(text);
+                    } else if (id == "detail") {
+                        var fontSize = ~~objs[i].width * 0.08;
+                        var texts = userInput[id].slice(0, 240);;
+                        var textNew = StringInsertByInterval(texts, '\n', 12);
+                        //   console.log(textNew, texts)
+
+
+                        var text = new fabric.Text(textNew, {
+                            fill: 'white',
+                            left: objs[i].left,
+                            top: objs[i].top,
+                            fontSize: fontSize,
+                            width: objs[i].width,
+                            lineHeight: 1,
+                            textAlign: 'left',
+                            fontFamily: 'monospace',
+                            charSpacing: fontSize,
+                            fontWeight: 300
+                        });
+
+                        // console.log(text)
+                        obj.add(text);
+                    } else if (id == 'avatar') {
+                        var imgInstance = new fabric.Image(userInput.avatar, {
+                            left: objs[i].left,
+                            top: objs[i].top,
+                            width: objs[i].width
+                        });
+                        console.log(imgInstance)
+                        obj.add(imgInstance);
+                    };
+
+                };
+
+            };
+
+            canvas.add(obj);
+            // console.log(canvas)
+
+            var ImageRes = new Image();
+            ImageRes.src = canvas.toDataURL();
+            document.querySelector('#main').appendChild(ImageRes);
+
+
+        });
+    };
+
+
+    function StringInsertByInterval(oc, ic, re) {
+
+        var reStr = "(.{" + re + "}|.*)";
+
+        var reg = new RegExp(reStr, "g");
+
+        var ocArray = oc.match(reg);
+        ocArray.pop();
+
+        var arrLength = ocArray.length + 1;
+
+        for (var element = 0; element < ocArray.length; element += 2) {
+
+            ocArray.splice(element + 1, 0, ic);
+
+        }
+        ocArray.pop();
+        var str = ocArray.join('');
+        return str;
+    };
+
+
+
+    function getWord() {
+        var words = ["如果你要成功，你应该朝新的道路前进，不要跟随被踩烂了的成功之路。", 
+        "创新思想不是那些专门从事开发创新思想的人的专有领地。", 
+        "已经创造出来的东西比起有待创造的东西来说，是微不足道的。",
+            "我们要获得现有的一切，而且要创造现在还没有的新事物！",
+             "开始走第一步的人，也许他脚下穿的鞋子就是他最后穿的一双。",
+             "创新就是创造性地破坏。",
+            "非经自我发奋所得的创新，就不是真正的创新。", 
+            "万事皆由人的意志创造。",
+             "唯有创造才是快乐。只有创造的生灵才是生灵。",
+            "关键不在岁数，而在于创造力的大小。 ",
+             "创造时，目光要深；开辟时，目光要远。",
+           "打破规则不是孕育创意的必要条件，但确是一条路径。",
+             "可持续竞争的唯一优势来自于超过竞争对手的创新潜质。", 
+            "天才的主要标记不是完美而是创造，天才能开创新的局面。",
+            "有一件事情是十分清楚的：创新思想不是那些专门从事开发创新思想的人的专有领地。",
+             "没有创新，就不可能有合理的，尤其是有效的管理。",
+            "大凡实际接触过科学研究的人都知道，不肯超越事实的人很少会有成就。",
+            "要创新需要一定的灵感，这灵感不是天生的，而是来自长期的积累与全身心的投入。没有积累就不会有创新。",
+            "异想天开给生活增加了一分不平凡的色彩，这是每一个青年和善感的人所必需的。", 
+            "有了精神的实验和观测作为研究的依据，想像力便成为自然科学理论的设计师。",
+            "在自然科学中，创立方法，研究某种重要的实验条件，往往要比发现个别事实更有价值。", 
+            "我们要记着，作了茧的蚕，是不会看到茧壳以外的世界的。",
+            "每一条道路都应该走一走", 
+            "距离已经消失，要么创新，要么死亡。",
+            "独创常常在于发现两个或两人以上研究对象或设想之间的联系或相似之点。",
+             "非经自己努力所得的创新，就不是真正的创新。", 
+             "对于一个艺术家来说，如果能够打破常规，完全自由进行创作，其成绩往往会是惊人的。",
+            "一个具有天才的禀赋的人，绝不遵循常人的思维途径。", 
+            "在创造家的事业中，每一步都要三思而后行，而不是盲目地瞎碰。",
+             "想出新办法的人在他的办法没有成功以前，人家总说他是异想天开。",
+            "凡能独立工作的人，一定能对自己的工作开辟一条新的路线。", 
+            "能正确地提出问题就是迈出了创新的第一步", 
+            "遇到难题时，我总是力求寻找巧妙的思路，出奇制胜。", 
+            "保守是舒服的产物。",
+            "对新的对象必须创出全新的概念", 
+            "如果你要成功，你应该朝新的道路前进，不要跟随被踩烂了的成功之路。", 
+            "本来无望的事，大胆尝试，往往能成功。"
+        ];
+
+
+
+
+
+        var index = ~~(Math.random() * words.length);
+        return words[index];
+
+
+
+
+    };
+</script>
+
+</html>
