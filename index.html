@@ -62,6 +62,7 @@
             z-index: 12;
             display: none;
             background: black;
+            text-align: center;
         }
 
 
@@ -280,7 +281,7 @@
             // console.log(canvas)
 
             var ImageRes = new Image();
-            ImageRes.style.width = "100%";
+            ImageRes.style.height = "100%";
             ImageRes.src = canvas.toDataURL();
             document.querySelector('#main').appendChild(ImageRes);
 
