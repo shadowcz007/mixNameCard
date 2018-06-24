@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="apple-moblie-web-app-capable" content="yes">
+    <meta name="viewport" content="initial-scale=1,maximum-scale=1,minimum-scale=1,user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <title>SEARCH MIXER</title>
+    <script src="https://cdn.bootcss.com/lunr.js/2.2.1/lunr.min.js"></script>
+    <script src="./data.js"></script>
+    <style>
+        body{
+            padding: 0;
+            margin: 0;
+            background: black;
+        }
+        #search{
+            height: 32px;
+            width: 70%;
+            margin-top: 10%;
+            margin-left: 10%;
+            border: none;
+            outline: 1px solid white;
+            background: #eee;
+            padding: 5%;
+
+        }
+        button{
+            background: white;
+            height: 56px;
+            width: 98px;
+            margin: 10%;
+        }
+        #result{
+            color:white;
+            padding: 24px;
+        }
+
+        .mixer{
+            background-color: coral;
+            color: black;
+            font-weight: 300;
+            font-size: 1.2em;
+            padding: 24px;
+        }
+        p{
+            font-weight: 300;
+
+        }
+
+        .id{
+            font-weight: 800;
+            font-style: Italic
+        }
+    </style>
+</head>
+<body>
+
+    <input type="text"  id="search">
+    <button onclick="search();">SEARCH</button>
+    <div id="result"></div>
+<script>
+     var idx = lunr(function () {
+            this.ref('id');
+            this.field('title');
+            this.field('location');
+            this.field('xg');
+            this.field('detail');
+            this.field('mixer');
+            this.field('resources');
+            this.field('vision');
+          
+            MLS.forEach(function (doc) {
+              this.add(doc)
+            }, this);
+          });
+
+          var searchEl=document.getElementById('search');
+          var resultEl=document.getElementById('result');
+
+    function search(){
+            var target=searchEl.value;
+          //  console.log(target)
+            var results=idx.search(target);
+           // console.log(results)
+            if (results.length==0) {
+                setResult(null);
+               
+            }else{
+                var res=[];
+                for (let i = 0; i < results.length; i++) {
+                   
+                    var id =  results[i].ref;
+                    var r=getMLSById(id);
+                    res.push(r);
+                };
+                setResult(res);
+            };
+
+            
+ 
+
+            
+    };
+
+
+
+    function setResult(_type){
+        if (_type===null) {
+            resultEl.innerText="暂时空缺噢～";
+        }else if(_type){
+            var mls=_type;
+            
+            resultEl.innerHTML='';
+            for (let i = 0; i < mls.length; i++) {
+                var ml=mls[i];
+               
+                displayML(ml);
+            };
+        };
+    };
+
+
+    function displayML(_ml){
+        id=createElementP(_ml.id);
+     
+      var html= createElementP(_ml.id,'id')+createElementP(_ml.title)+createElementP(_ml.location)+createElementP(_ml.xg)+createElementP(_ml.detail)+createElementP(_ml.resources)+createElementP(_ml.vision);
+      
+     var isML= _ml.mixer;
+
+     if (isML) {
+        html= '<div class="mixer"><h4>共建者</h4>'+html+'</div>';
+     };
+
+     resultEl.innerHTML=resultEl.innerHTML+'<hr>'+html;
+
+
+    };
+
+    function createElementP(_text,_type){
+
+        var p=document.createElement('p');
+            p.innerText=_text||'';
+        
+            p.className=_type||'';
+      
+            return p.outerHTML
+
+    }
+    
+
+</script>
+       
+    
+</body>
+</html>
