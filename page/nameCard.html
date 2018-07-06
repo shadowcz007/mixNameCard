@@ -9,6 +9,8 @@
     <title>MIXLAB-NAME-CARD</title>
     <script src="https://cdn.bootcss.com/fabric.js/2.3.0/fabric.min.js"></script>
     <script src="https://cdn.bootcss.com/randomcolor/0.5.2/randomColor.min.js"></script>
+    <script src="../js/wordcloud2.js"></script>
+    <script src="../js/mix-wordcloud.js"></script>
     <script src="../js/mix-words.js"></script>
     <script src="../js/mix-today.js"></script>
 
@@ -54,7 +56,8 @@
     </div>
 
     <div class="mix-btn-bottom">
-        <button class="mix-btn" onclick="start();" id="start">生成日签／名片</button>
+        <button class="mix-btn" onclick="start();" id="start">日签名片</button>
+        <button class="mix-btn mix-btn-color" onclick="startGIF();" id="startGIF">会动的名片</button>
     </div>
 
 
@@ -71,13 +74,17 @@
     var todayInfo = getToday();
     document.querySelector('.mix-avatar-upload').style.backgroundColor = todayInfo.color;
 
+    var bg_wordcloud;
 
+    getWordcloud(window.innerWidth, todayInfo.color, function (bg) {
+        bg_wordcloud = bg;
+    });
 
     var mixWord = new MixWord();
 
     var urlOpts = getOpts();
 
-    var cardFrom = cardFromUrl(urlOpts.from);
+
 
     function getOpts() {
         var url = window.location.href;
@@ -98,14 +105,6 @@
         return obj
     };
 
-    function cardFromUrl(_from) {
-        if (_from == 'cot') {
-            return '../img/name_card_cot.svg'
-        } else if (_from == 'mixlab') {
-            return '../img/name_card.svg'
-        };
-    };
-
 
 
 
@@ -119,6 +118,7 @@
         avatar_displayEl = document.querySelector('.mix-avatar-upload');
 
     var startEl = document.getElementById('start'),
+        startGIFEl = document.getElementById('startGIF'),
         loadingEl = document.getElementById('loading');
 
     var inputDiv = document.getElementById('mix-input'),
@@ -191,20 +191,47 @@
         if (isInput) {
             create();
             startEl.innerText = '再做一张';
+            startGIFEl.style.display = 'none';
         } else {
             newInput();
             startEl.innerText = '生成名片';
+            startGIFEl.style.display = 'block';
         };
     };
+
+
+    function startGIF() {
+        if (isInput) {
+            create('gif');
+            startEl.innerText = '再做一张';
+            startGIFEl.style.display = 'none';
+        };
+    };
+
 
     function newInput() {
         isInput = true;
         inputDiv.style.display = 'block';
         mainDiv.style.display = 'none';
         mainDiv.innerHTML = '';
-    }
+    };
 
-    function create() {
+
+    function cardFromUrl(_from, _isGif) {
+        if (_from == 'cot') {
+            return '../img/name_card_cot.svg'
+        } else if (_from == 'mixlab') {
+            if (_isGif) {
+                return '../img/today_card.svg'
+            } else {
+                return '../img/name_card.svg'
+            }
+
+        };
+    };
+
+
+    function create(_type) {
         isInput = false;
         inputDiv.style.display = 'none';
         mainDiv.style.display = 'block';
@@ -217,154 +244,266 @@
             avatar: avatar || 'none'
         };
 
-        // console.log(userInput)
-
         localStorage.setItem('userInput', JSON.stringify(userInput));
 
-        var canvasEl = document.createElement('canvas');
-        var canvas = new fabric.Canvas(canvasEl);
+
+        var isGif = (_type == 'gif') ? true : false;
+        var cardFrom = cardFromUrl(urlOpts.from, isGif);
+
 
         fabric.loadSVGFromURL(cardFrom, function (objects, options) {
-            var obj = fabric.util.groupSVGElements(objects, options);
-            canvas.setWidth(obj.width);
-            canvas.setHeight(obj.height);
-            canvas.setBackgroundColor('black');
 
 
-            //  console.log(obj)
 
-            var objs = obj.getObjects();
-            // console.log(avatar)
-            for (var i = 0; i < objs.length; i++) {
+            var canvas = createCanvasFrame(userInput, todayInfo, objects, options);
 
-                var id = objs[i].id;
-                if (userInput[id]) {
-                    //  console.log(objs[i].height);
-                    if (id == 'name') {
-                        var text = new fabric.Text(userInput[id].slice(0, 12), {
-                            fill: 'white',
+
+
+
+            var ImageRes = new Image();
+            ImageRes.style.height = "70%";
+            ImageRes.style.marginTop = "2em";
+
+            ImageRes.src = canvas.toDataURL();
+            //  mainDiv.appendChild(ImageRes);
+
+            if (isGif) {
+                var obj = canvas.item(0);
+                var objs = obj.getObjects();
+                var colors = randomColor({
+                    count: objs.length,
+                    hue: todayInfo.color
+                });
+
+                for (var i = 0; i < objs.length; i++) {
+                    var id = objs[i].id;
+
+                    if (id && id == 'Oval') {
+
+                        objs[i].set('fill', colors[i]);
+                    };
+                };
+
+                var ImageRes2 = new Image();
+                ImageRes2.src = canvas.toDataURL();
+
+                setTimeout(function () {
+                    createGIF(canvas.width, canvas.height, [ImageRes, ImageRes2], function (gif) {
+
+                        gif.style.height = "70%";
+                        gif.style.marginTop = "2em";
+                        mainDiv.appendChild(gif);
+                        
+                        var a = document.createElement('a');
+                        a.innerText = '长按图片保存\nMIXLAB提供技术支持';
+                        a.className = "mix-info";
+                        a.href = "./index.html";
+
+                        mainDiv.appendChild(a);
+                        loadingEl.style.display = "none";
+
+                    });
+
+                }, 300);
+            } else {
+                mainDiv.appendChild(ImageRes);
+                var a = document.createElement('a');
+                a.innerText = '长按图片保存\nMIXLAB提供技术支持';
+                a.className = "mix-info";
+                a.href = "./index.html";
+
+                mainDiv.appendChild(a);
+                loadingEl.style.display = "none";
+            };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        });
+
+
+    };
+
+
+    function createCanvasFrame(userInput, todayInfo, objects, options) {
+
+        var obj = fabric.util.groupSVGElements(objects, options);
+
+
+
+        // console.log(obj)
+
+        fabric.Group.prototype.drawText = function (textObj) {
+
+            var text = new fabric.Text(textObj.text, {
+                fill: textObj.fill,
+                left: textObj.left,
+                top: textObj.top,
+                fontSize: textObj.fontSize,
+                fontFamily: 'Noto-Light',
+                fontWeight: textObj.fontWeight,
+                width: textObj.width,
+                lineHeight: textObj.lineHeight || 1,
+                textAlign: textObj.textAlign || 'left',
+                fontStyle: textObj.fontStyle || 'normal',
+                charSpacing: textObj.charSpacing || textObj.fontSize
+
+            });
+
+            this.add(text);
+
+        };
+
+        var objs = obj.getObjects();
+
+
+        var colors = randomColor({
+            count: objs.length,
+            hue: todayInfo.color
+        });
+
+        //console.log(avatar)
+        for (var i = 0; i < objs.length; i++) {
+
+            var id = objs[i].id;
+
+
+            if (userInput[id]) {
+                //  console.log(objs[i].height);
+                if (id == 'name') {
+
+                    objs[i].visible = false;
+
+                    var textObj = {
+                        text: userInput[id].slice(0, 12),
+                        fill: 'white',
+                        left: objs[i].left,
+                        top: objs[i].top,
+                        fontSize: objs[i].height * 1.1,
+                        fontWeight: 700
+                    };
+
+                    obj.drawText(textObj);
+
+
+                } else if (id == "title") {
+
+                    var texts = userInput[id].slice(0, 24);
+                    var textNew = StringInsertByInterval(texts, '\n', 14);
+
+                    var textObj = {
+                        text: textNew,
+                        fill: 'white',
+                        left: objs[i].left,
+                        top: objs[i].top + 30,
+                        fontSize: objs[i].height * 0.6,
+                        fontWeight: 100
+                    };
+
+                    obj.drawText(textObj);
+
+                } else if (id == "detail") {
+                    var fontSize = ~~objs[i].width * 0.08;
+                    var texts = userInput[id].slice(0, 240);;
+                    var textNew = StringInsertByInterval(texts, '\n', 12);
+                    //   console.log(textNew, texts)
+
+                    var textObj = {
+                        text: textNew,
+                        fill: 'white',
+                        left: objs[i].left,
+                        top: objs[i].top + 30,
+                        fontSize: fontSize,
+                        fontWeight: 100,
+                        width: objs[i].width,
+                        lineHeight: 1.2,
+                        textAlign: 'left',
+                        fontStyle: 'Italic',
+                        charSpacing: fontSize
+                    };
+
+                    obj.drawText(textObj);
+
+
+                } else if (id == 'avatar') {
+
+                    if (userInput.avatar != 'none') {
+                        var imgInstance = new fabric.Image(userInput.avatar, {
                             left: objs[i].left,
                             top: objs[i].top,
-                            fontSize: objs[i].height * 1.1,
-                            fontFamily: 'Noto-Light',
-                            fontWeight: 700,
+                            width: objs[i].width
                         });
                         objs[i].visible = false;
-                        obj.add(text);
-                    } else if (id == "title") {
+                        //   console.log(imgInstance)
+                        obj.add(imgInstance);
+                    } else {
 
-                        var texts = userInput[id].slice(0, 24);
-                        var textNew = StringInsertByInterval(texts, '\n', 14);
-
-                        var text = new fabric.Text(textNew, {
-                            fill: 'white',
-                            left: objs[i].left,
-                            top: objs[i].top + 30,
-                            fontSize: objs[i].height * 0.6,
-                            fontFamily: 'Noto-Light',
-                            fontWeight: 100
-                        });
                         objs[i].visible = false;
-                        obj.add(text);
-                    } else if (id == "detail") {
-                        var fontSize = ~~objs[i].width * 0.08;
-                        var texts = userInput[id].slice(0, 240);;
-                        var textNew = StringInsertByInterval(texts, '\n', 12);
-                        //   console.log(textNew, texts)
+
+                        var fontSize = objs[i].height * 0.5;
+
+                        var _top = objs[i].top + 44;
 
 
-                        var text = new fabric.Text(textNew, {
+                        var rect = new fabric.Rect({
+                            left: objs[i].left,
+                            top: _top,
+                            width: objs[i].width,
+                            height: objs[i].height,
+                            fill: todayInfo.color,
+                            opacity: 0.4
+                        });
+                        var rect2 = new fabric.Rect({
+                            left: objs[i].left - 32,
+                            top: _top - 32,
+                            width: objs[i].width,
+                            height: objs[i].height,
+                            fill: todayInfo.color,
+                            opacity: 0.4
+                        });
+                        obj.add(rect);
+                        obj.add(rect2);
+
+                        var textObj1 = {
+                            text: todayInfo.date,
                             fill: 'white',
                             left: objs[i].left,
-                            top: objs[i].top + 30,
+                            top: _top,
                             fontSize: fontSize,
+                            fontWeight: 100,
                             width: objs[i].width,
                             lineHeight: 1.2,
-                            textAlign: 'left',
-                            fontFamily: 'Noto-Light',
-                            fontStyle: 'Italic',
-                            charSpacing: fontSize,
-                            fontWeight: 100
-                        });
-                        objs[i].visible = false;
-                        // console.log(text)
-                        obj.add(text);
-                    } else if (id == 'avatar') {
-
-                        if (userInput.avatar != 'none') {
-                            var imgInstance = new fabric.Image(userInput.avatar, {
-                                left: objs[i].left,
-                                top: objs[i].top,
-                                width: objs[i].width
-                            });
-                            objs[i].visible = false;
-                            //   console.log(imgInstance)
-                            obj.add(imgInstance);
-                        } else {
-
-                            objs[i].visible = false;
-
-                            var fontSize = objs[i].height * 0.5;
-
-                            var _top = objs[i].top + 44;
-
-
-                            var rect = new fabric.Rect({
-                                left: objs[i].left,
-                                top: _top,
-                                width: objs[i].width,
-                                height: objs[i].height,
-                                fill: todayInfo.color,
-                                opacity: 0.4
-                            });
-                            var rect2 = new fabric.Rect({
-                                left: objs[i].left-32,
-                                top: _top-32,
-                                width: objs[i].width,
-                                height: objs[i].height,
-                                fill: todayInfo.color,
-                                opacity: 0.4
-                            });
-                            obj.add(rect);
-                            obj.add(rect2);
-
-                            var text = new fabric.Text(todayInfo.date, {
-                                fill: 'white',
-                                left: objs[i].left,
-                                top: _top,
-                                fontSize: fontSize,
-                                width: objs[i].width,
-                                lineHeight: 1.2,
-                                textAlign: 'left',
-                                fontFamily: 'Noto-Light',
-                                fontStyle: 'Italic',
-                                fontWeight: 100
-                            });
-
-                            // console.log(text)
-                            obj.add(text);
-
-                            var text2 = new fabric.Text(todayInfo.yearMonth, {
-                                fill: 'white',
-                                left: objs[i].left,
-                                top: _top + fontSize,
-                                fontSize: fontSize * 0.3,
-                                width: objs[i].width,
-                                lineHeight: 1.2,
-                                textAlign: 'left',
-                                fontFamily: 'Noto-Light',
-                                fontStyle: 'Italic',
-                                charSpacing: fontSize * 0.3,
-                                fontWeight: 100
-                            });
-
-                            // console.log(text)
-                            obj.add(text2);
-
-
-
+                            fontStyle: 'Italic'
                         };
 
+                        var textObj2 = {
+                            text: todayInfo.yearMonth,
+                            fill: 'white',
+                            left: objs[i].left,
+                            top: _top + fontSize,
+                            fontSize: fontSize * 0.3,
+                            fontWeight: 100,
+                            width: objs[i].width,
+                            lineHeight: 1.2,
+                            fontStyle: 'Italic',
+                            charSpacing: fontSize * 0.3
+                        };
+
+                        obj.drawText(textObj1);
+                        obj.drawText(textObj2);
 
 
                     };
@@ -373,27 +512,99 @@
 
                 };
 
+
+
+            } else {
+                if (id == 'Oval') {
+                    // console.log(objs[i]);
+
+                    objs[i].set('fill', colors[i]);
+
+                }
             };
 
-            canvas.add(obj);
-            // console.log(canvas)
+        };
 
-            var ImageRes = new Image();
-            ImageRes.style.height = "70%";
-            ImageRes.style.marginTop = "2em";
 
-            ImageRes.src = canvas.toDataURL();
+        var canvas = createCanvas(obj);
 
-            mainDiv.appendChild(ImageRes);
-            var a = document.createElement('a');
-            a.innerText = '长按图片保存\nMIXLAB提供技术支持';
-            a.className = "mix-info";
-            a.href = "./index.html";
 
-            mainDiv.appendChild(a);
-            loadingEl.style.display = "none";
+        /*
+                  var colors = randomColor({
+                    count: objs.length * 2,
+                    hue: todayInfo.color
+                });
+
+                for (var i = 0; i < objs.length; i++) {
+                    var id = objs[i].id;
+
+                    if (id && id == 'Oval') {
+                        console.log(id)
+                        objs[i].set('fill', colors[i]);
+                    };
+                };
+        */
+
+
+
+
+
+        return canvas
+    };
+
+
+    function createCanvas(obj) {
+        var canvasEl = document.createElement('canvas');
+        var canvas = new fabric.Canvas(canvasEl);
+        canvas.setWidth(obj.width);
+        canvas.setHeight(obj.height);
+        canvas.setBackgroundColor('rgba(0,0,0,1)');
+        canvas.add(obj);
+        return canvas
+    };
+
+
+    function createGIF(w, h, frames, cb) {
+
+        var t1 = (new Date()).getTime();
+        console.log('-----开始-----' + 'w:' + w + ' , h:' + h)
+
+        let gif = new GIF({
+            workers: 40,
+            quality: 10,
+            width: w,
+            height: h,
+            workerScript: '../js/gif.worker.js'
+        });
+
+
+        for (let index = 0; index < frames.length; index++) {
+
+
+            gif.addFrame(frames[index], {
+                delay: 200
+            })
+
+        };
+
+
+        gif.on('finished', function (blob) {
+
+            var img = new Image();
+
+            img.onload = function () {
+                cb(img);
+                //document.body.appendChild(img);
+                console.log('-----完成-----' + ((new Date()).getTime() - t1) + 'ms')
+
+            };
+
+            img.src = URL.createObjectURL(blob);
 
         });
+
+        gif.render();
+
     };
 
 
@@ -420,5 +631,6 @@
 </script>
 
 <script src="https://cdn.bootcss.com/smartcrop/2.0.3/smartcrop.min.js"></script>
+<script src="https://cdn.bootcss.com/gif.js/0.2.0/gif.js"></script>
 
 </html>

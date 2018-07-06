@@ -88,6 +88,11 @@
     color: white;
 }
 
+.mix-btn-color{
+    background:pink;
+    color:black;
+}
+
 #loading {
     position: fixed;
     top: 0;
