@@ -55,7 +55,6 @@
 
     <div class="mix-btn-bottom">
         <button class="mix-btn" onclick="start();" id="start">生成日签／名片</button>
-        <div class="mix-today-label"></div>
     </div>
 
 
@@ -70,7 +69,7 @@
 
 <script>
     var todayInfo = getToday();
-    document.querySelector('.mix-today-label').style.backgroundColor = todayInfo.color;
+    document.querySelector('.mix-avatar-upload').style.backgroundColor = todayInfo.color;
 
 
 
