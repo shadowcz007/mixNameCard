@@ -48,7 +48,7 @@
     </div>
 
     <div class="mix-btn-bottom">
-        <button class="mix-btn" onclick="start();" id="start">生成名片</button>
+        <button class="mix-btn" onclick="start();" id="start">生成日签／名片</button>
     </div>
 
 
@@ -64,9 +64,9 @@
 <script>
     var mixWord = new MixWord();
 
-    var urlOpts=getOpts();
+    var urlOpts = getOpts();
 
-    var cardFrom =cardFromUrl(urlOpts.from);
+    var cardFrom = cardFromUrl(urlOpts.from);
 
     function getOpts() {
         var url = window.location.href;
@@ -81,22 +81,22 @@
                 var ks = opts[i].split('=');
                 obj[ks[0]] = ks[1];
             };
-             
+
         };
-        
+
         return obj
     };
 
-    function cardFromUrl(_from){
-        if (_from=='cot') {
+    function cardFromUrl(_from) {
+        if (_from == 'cot') {
             return '../img/name_card_cot.svg'
-        }else if(_from=='mixlab'){
+        } else if (_from == 'mixlab') {
             return '../img/name_card.svg'
         };
     };
 
 
-    
+
 
 
 
@@ -203,8 +203,10 @@
             name: nameEl.value || 'MixLearner',
             title: titleEl.value || '社区成员',
             detail: detailEl.value || mixWord.getWord(),
-            avatar: avatar
+            avatar: avatar||'none'
         };
+
+       // console.log(userInput)
 
         localStorage.setItem('userInput', JSON.stringify(userInput));
 
@@ -276,16 +278,77 @@
                         objs[i].visible = false;
                         // console.log(text)
                         obj.add(text);
-                    } else if (id == 'avatar' && userInput.avatar != null) {
-                        var imgInstance = new fabric.Image(userInput.avatar, {
-                            left: objs[i].left,
-                            top: objs[i].top,
-                            width: objs[i].width
-                        });
-                        objs[i].visible = false;
-                        //   console.log(imgInstance)
-                        obj.add(imgInstance);
+                    } else if (id == 'avatar') {
+                       
+                        if (userInput.avatar != 'none') {
+                            var imgInstance = new fabric.Image(userInput.avatar, {
+                                left: objs[i].left,
+                                top: objs[i].top,
+                                width: objs[i].width
+                            });
+                            objs[i].visible = false;
+                            //   console.log(imgInstance)
+                            obj.add(imgInstance);
+                        } else {
+
+                            objs[i].visible = false;
+
+                            var fontSize=objs[i].height*0.5;
+                            var _date=new Date();
+                            var _day=_date.getDate().toString(),_month=(_date.getMonth()+1).toString();
+                            if (_day.length==1) {
+                                _day='0'+_day;
+                            };
+                            if (_month.length==1) {
+                                _month='0'+_month;
+                            };
+
+                            var _yearMonth=_date.getFullYear()+'/'+_month;
+                            
+                            var _top=objs[i].top+44;
+
+                            var text = new fabric.Text(_day, {
+                                fill: 'white',
+                                left: objs[i].left,
+                                top: _top,
+                                fontSize: fontSize,
+                                width: objs[i].width,
+                                lineHeight: 1.2,
+                                textAlign: 'left',
+                                fontFamily: 'Noto-Light',
+                                fontStyle: 'Italic',
+                                fontWeight: 100
+                            });
+                            
+                            // console.log(text)
+                            obj.add(text);
+
+                            var text2 = new fabric.Text(_yearMonth, {
+                                fill: 'white',
+                                left: objs[i].left,
+                                top: _top+ fontSize,
+                                fontSize: fontSize*0.3,
+                                width: objs[i].width,
+                                lineHeight: 1.2,
+                                textAlign: 'left',
+                                fontFamily: 'Noto-Light',
+                                fontStyle: 'Italic',
+                                charSpacing: fontSize*0.3,
+                                fontWeight: 100
+                            });
+                            
+                            // console.log(text)
+                            obj.add(text2);
+
+
+
+                        };
+
+
+
                     };
+
+                 
 
                 };
 
@@ -333,6 +396,8 @@
         var str = ocArray.join('');
         return str;
     };
+
+ 
 </script>
 
 <script src="https://cdn.bootcss.com/smartcrop/2.0.3/smartcrop.min.js"></script>
