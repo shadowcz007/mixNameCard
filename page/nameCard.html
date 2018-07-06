@@ -57,7 +57,7 @@
 
     <div class="mix-btn-bottom">
         <button class="mix-btn" onclick="start();" id="start">日签名片</button>
-        <button class="mix-btn mix-btn-color" onclick="startGIF();" id="startGIF">会动的名片</button>
+        <button class="mix-btn mix-btn-color" onclick="startGIF();" id="startGIF">会动的</button>
     </div>
 
 
@@ -290,7 +290,7 @@
                 setTimeout(function () {
                     createGIF(canvas.width, canvas.height, [ImageRes, ImageRes2], function (gif) {
 
-                        gif.style.height = "70%";
+                        gif.style.width = "80%";
                         gif.style.marginTop = "2em";
                         mainDiv.appendChild(gif);
                         
