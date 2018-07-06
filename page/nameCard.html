@@ -8,7 +8,10 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <title>MIXLAB-NAME-CARD</title>
     <script src="https://cdn.bootcss.com/fabric.js/2.3.0/fabric.min.js"></script>
+    <script src="https://cdn.bootcss.com/randomcolor/0.5.2/randomColor.min.js"></script>
     <script src="../js/mix-words.js"></script>
+    <script src="../js/mix-today.js"></script>
+
     <link rel="stylesheet" href="../css/mix.css">
     <style>
         #main {
@@ -26,6 +29,9 @@
 </head>
 
 <body class="mix-contarner">
+
+
+
     <div class="mix-pannel" id="mix-input">
 
         <p class="mix-title">头像</p>
@@ -48,7 +54,8 @@
     </div>
 
     <div class="mix-btn-bottom">
-        <button class="mix-btn" onclick="start();" id="start">生成名片</button>
+        <button class="mix-btn" onclick="start();" id="start">生成日签／名片</button>
+        <div class="mix-today-label"></div>
     </div>
 
 
@@ -62,11 +69,16 @@
 </body>
 
 <script>
+    var todayInfo = getToday();
+    document.querySelector('.mix-today-label').style.backgroundColor = todayInfo.color;
+
+
+
     var mixWord = new MixWord();
 
-    var urlOpts=getOpts();
+    var urlOpts = getOpts();
 
-    var cardFrom =cardFromUrl(urlOpts.from);
+    var cardFrom = cardFromUrl(urlOpts.from);
 
     function getOpts() {
         var url = window.location.href;
@@ -81,22 +93,22 @@
                 var ks = opts[i].split('=');
                 obj[ks[0]] = ks[1];
             };
-             
+
         };
-        
+
         return obj
     };
 
-    function cardFromUrl(_from){
-        if (_from=='cot') {
+    function cardFromUrl(_from) {
+        if (_from == 'cot') {
             return '../img/name_card_cot.svg'
-        }else if(_from=='mixlab'){
+        } else if (_from == 'mixlab') {
             return '../img/name_card.svg'
         };
     };
 
 
-    
+
 
 
 
@@ -203,8 +215,10 @@
             name: nameEl.value || 'MixLearner',
             title: titleEl.value || '社区成员',
             detail: detailEl.value || mixWord.getWord(),
-            avatar: avatar
+            avatar: avatar || 'none'
         };
+
+        // console.log(userInput)
 
         localStorage.setItem('userInput', JSON.stringify(userInput));
 
@@ -276,16 +290,87 @@
                         objs[i].visible = false;
                         // console.log(text)
                         obj.add(text);
-                    } else if (id == 'avatar' && userInput.avatar != null) {
-                        var imgInstance = new fabric.Image(userInput.avatar, {
-                            left: objs[i].left,
-                            top: objs[i].top,
-                            width: objs[i].width
-                        });
-                        objs[i].visible = false;
-                        //   console.log(imgInstance)
-                        obj.add(imgInstance);
+                    } else if (id == 'avatar') {
+
+                        if (userInput.avatar != 'none') {
+                            var imgInstance = new fabric.Image(userInput.avatar, {
+                                left: objs[i].left,
+                                top: objs[i].top,
+                                width: objs[i].width
+                            });
+                            objs[i].visible = false;
+                            //   console.log(imgInstance)
+                            obj.add(imgInstance);
+                        } else {
+
+                            objs[i].visible = false;
+
+                            var fontSize = objs[i].height * 0.5;
+
+                            var _top = objs[i].top + 44;
+
+
+                            var rect = new fabric.Rect({
+                                left: objs[i].left,
+                                top: _top,
+                                width: objs[i].width,
+                                height: objs[i].height,
+                                fill: todayInfo.color,
+                                opacity: 0.4
+                            });
+                            var rect2 = new fabric.Rect({
+                                left: objs[i].left-32,
+                                top: _top-32,
+                                width: objs[i].width,
+                                height: objs[i].height,
+                                fill: todayInfo.color,
+                                opacity: 0.4
+                            });
+                            obj.add(rect);
+                            obj.add(rect2);
+
+                            var text = new fabric.Text(todayInfo.date, {
+                                fill: 'white',
+                                left: objs[i].left,
+                                top: _top,
+                                fontSize: fontSize,
+                                width: objs[i].width,
+                                lineHeight: 1.2,
+                                textAlign: 'left',
+                                fontFamily: 'Noto-Light',
+                                fontStyle: 'Italic',
+                                fontWeight: 100
+                            });
+
+                            // console.log(text)
+                            obj.add(text);
+
+                            var text2 = new fabric.Text(todayInfo.yearMonth, {
+                                fill: 'white',
+                                left: objs[i].left,
+                                top: _top + fontSize,
+                                fontSize: fontSize * 0.3,
+                                width: objs[i].width,
+                                lineHeight: 1.2,
+                                textAlign: 'left',
+                                fontFamily: 'Noto-Light',
+                                fontStyle: 'Italic',
+                                charSpacing: fontSize * 0.3,
+                                fontWeight: 100
+                            });
+
+                            // console.log(text)
+                            obj.add(text2);
+
+
+
+                        };
+
+
+
                     };
+
+
 
                 };
 
