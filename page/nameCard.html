@@ -280,7 +280,7 @@
 
 
         var isGif = (_type == 'gif') ? true : false;
-        var cardFrom = cardFromUrl(urlOpts.from, isGif);
+        var cardFrom = cardFromUrl(urlOpts.name, isGif);
         
         //  console.log(isGif,cardFrom)
         fabric.loadSVGFromURL(cardFrom, function (objects, options) {
@@ -674,7 +674,7 @@
         startGIF();
     };
 
-    
+
 </script>
 
 <script src="https://cdn.bootcss.com/smartcrop/2.0.3/smartcrop.min.js"></script>
