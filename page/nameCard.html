@@ -70,7 +70,7 @@
 
     </div>
 </body>
-
+<script src="./js/config.js"></script>
 <script>
     //init
     var todayInfo = getToday();
@@ -103,6 +103,10 @@
                 obj[ks[0]] = ks[1];
             };
 
+        };
+
+        if (!obj.name) {
+            obj=cardFrom[0];
         };
 
         return obj
