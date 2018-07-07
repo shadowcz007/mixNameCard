@@ -44,20 +44,21 @@
         <input class="mix-input" type="text" id="name" placeholder="姓名">
         <input class="mix-input" type="text" id="title" placeholder="职位／身份">
 
-        <textarea class="mix-textarea" name="" id="detail" cols="20" rows="10" placeholder="个人详细介绍(选填）"></textarea>
+        <textarea class="mix-textarea" name="" id="detail" cols="20" rows="10" placeholder="介绍／感悟／语录(选填）"></textarea>
 
         <br>
         <br>
         <br>
         <br>
 
-        <p>by MIXLAB</p>
+
 
     </div>
 
     <div class="mix-btn-bottom">
         <button class="mix-btn" onclick="start();" id="start">日签名片</button>
-        <button class="mix-btn mix-btn-color" onclick="startGIF();" id="startGIF">会动的</button>
+        <button class="mix-btn mix-btn-color-greenyellow" onclick="edit();" id="edit">编辑</button>
+        <button class="mix-btn mix-btn-color-pink" onclick="startGIF();" id="startGIF">会动的</button>
     </div>
 
 
@@ -71,6 +72,7 @@
 </body>
 
 <script>
+    //init
     var todayInfo = getToday();
     document.querySelector('.mix-avatar-upload').style.backgroundColor = todayInfo.color;
 
@@ -82,9 +84,10 @@
 
     var mixWord = new MixWord();
 
+
+
+    //init url option
     var urlOpts = getOpts();
-
-
 
     function getOpts() {
         var url = window.location.href;
@@ -107,23 +110,33 @@
 
 
 
-    var isInput = true;
+
     var nameEl = document.getElementById('name'),
         titleEl = document.getElementById('title'),
         detailEl = document.getElementById('detail'),
         avatarEl = document.getElementById('avatar'),
         avatar_displayEl = document.querySelector('.mix-avatar-upload');
 
-    var startEl = document.getElementById('start'),
+    var editEl = document.getElementById('edit'),
+        startEl = document.getElementById('start'),
         startGIFEl = document.getElementById('startGIF'),
         loadingEl = document.getElementById('loading');
 
     var inputDiv = document.getElementById('mix-input'),
         mainDiv = document.getElementById('main');
 
-   
-   urlOpts.gif=='0'?startGIFEl.style.display='none':null;
-    
+
+
+    if (urlOpts.gif == '0') {
+        start();
+        startGIFEl.style.display = 'none';
+    } else {
+        startGIF();
+    };
+
+
+
+
 
     var avatar = null;
     avatarEl.addEventListener('change', handleFiles);
@@ -188,36 +201,58 @@
         img.src = src;
     };
 
+
+
+
+
     function start() {
-        if (isInput) {
-            create();
-            startEl.innerText = '再做一张';
+
+        create();
+        //startEl.innerText = '编辑';
+        startEl.style.display = 'none';
+        editEl.style.display = 'block';
+        mainDiv.innerHTML = '';
+
+        if (urlOpts.gif == '0') {
             startGIFEl.style.display = 'none';
         } else {
-            newInput();
-            startEl.innerText = '生成名片';
-
-            urlOpts.gif=='1'?startGIFEl.style.display='block':null;
-             
+            startGIFEl.style.display = 'block';
         };
+
+
     };
 
 
     function startGIF() {
-        if (isInput) {
-            create('gif');
-            startEl.innerText = '再做一张';
-            startGIFEl.style.display = 'none';
-        };
+        create('gif');
+        //  console.log('gif')
+        // startEl.innerText = '编辑';
+        startGIFEl.style.display = 'none';
+        startEl.style.display = 'block';
+        editEl.style.display = 'block';
+        mainDiv.innerHTML = '';
+
     };
 
 
-    function newInput() {
-        isInput = true;
+    function edit() {
+        editEl.style.display = 'none';
         inputDiv.style.display = 'block';
         mainDiv.style.display = 'none';
         mainDiv.innerHTML = '';
+        
+        startEl.style.display = 'block';
+
+        if (urlOpts.gif == '0') {
+            startGIFEl.style.display = 'none';
+        } else {
+            startGIFEl.style.display = 'block';
+        };
+
+         
     };
+
+
 
 
     function cardFromUrl(_from, _isGif) {
@@ -235,7 +270,7 @@
 
 
     function create(_type) {
-        isInput = false;
+
         inputDiv.style.display = 'none';
         mainDiv.style.display = 'block';
         loadingEl.style.display = 'block';
@@ -253,10 +288,8 @@
         var isGif = (_type == 'gif') ? true : false;
         var cardFrom = cardFromUrl(urlOpts.from, isGif);
 
-
+        //  console.log(isGif,cardFrom)
         fabric.loadSVGFromURL(cardFrom, function (objects, options) {
-
-
 
             var canvas = createCanvasFrame(userInput, todayInfo, objects, options);
 
@@ -272,7 +305,7 @@
 
             ImageRes.src = canvas.toDataURL(imgOpts);
             //  mainDiv.appendChild(ImageRes);
-           // console.log(ImageRes)
+            // console.log(ImageRes)
 
             if (isGif) {
                 var obj = canvas.item(0);
@@ -304,12 +337,13 @@
                         mainDiv.appendChild(gif);
 
                         var a = document.createElement('a');
-                        a.innerText = '长按图片保存\nMIXLAB提供技术支持';
+                        a.innerText = '长按图片分享\n\nMIXLAB提供技术支持\n公众号Design-AI-Lab';
                         a.className = "mix-info";
                         a.href = "./index.html";
 
                         mainDiv.appendChild(a);
                         loadingEl.style.display = "none";
+                        canvas = null;
 
                     });
 
@@ -317,12 +351,13 @@
             } else {
                 mainDiv.appendChild(ImageRes);
                 var a = document.createElement('a');
-                a.innerText = '长按图片保存\nMIXLAB提供技术支持';
+                a.innerText = '长按图片分享\n\nMIXLAB提供技术支持\n公众号Design-AI-Lab';
                 a.className = "mix-info";
                 a.href = "./index.html";
 
                 mainDiv.appendChild(a);
                 loadingEl.style.display = "none";
+                canvas = null;
             };
 
         });
@@ -600,11 +635,11 @@
                 }
                 a.readAsDataURL(blob);
             };
-            
+
             blobToBase64(blob, function (data) {
                 img.src = data;
             });
- 
+
 
         });
 

@@ -9,11 +9,14 @@
     /* iOS 4.1- */
 }
 
+
+
 .mix-contarner {
     background: #eee;
     padding: 0;
     margin: 0;
-    font-family: Noto-Light
+    font-family: Noto-Light;
+    
 }
 
 .mix-title {
@@ -57,7 +60,19 @@
     background-color: #cecece;
     background-size: 100%;
 }
-
+.mix-cards{
+    padding: 0
+}
+.mix-card{
+    height: 88px;
+    border-bottom: 1px dashed black;
+    list-style:none;
+    margin-bottom: 1em;
+    padding: 1em;
+    text-decoration:none;
+    display: block;
+    color:black;
+}
 .mix-pannel {
     position: absolute;
     left: 0;
@@ -88,8 +103,12 @@
     color: white;
 }
 
-.mix-btn-color{
+.mix-btn-color-pink{
     background:pink;
+    color:black;
+}
+.mix-btn-color-greenyellow{
+    background:greenyellow;
     color:black;
 }
 

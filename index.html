@@ -1,15 +1,14 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh">
 
 <head>
     <meta charset="utf-8">
     <meta name="apple-moblie-web-app-capable" content="yes">
     <meta name="viewport" content="initial-scale=1,maximum-scale=1,minimum-scale=1,user-scalable=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <title>MIXLAB-NAME-CARD</title>
+    <title>MIXLAND 无界空间</title>
     <link href="https://cdn.bootcss.com/Swiper/4.3.0/css/swiper.min.css" rel="stylesheet">
     <script src="https://cdn.bootcss.com/Swiper/4.3.0/js/swiper.min.js"></script>
-
     <link rel="stylesheet" href="./css/mix.css">
     <style>
         .swiper-container {
@@ -32,8 +31,13 @@
 <body class="mix-contarner">
     <div class="mix-pannel">
 
-        <p class="mix-title">MIXLAB及合作伙伴们的社群名片</p>
+        <p class="mix-title">无界空间 / MIXLAND</p>
 
+        <ul id="mix-name-cards" class="mix-cards">
+
+        </ul>
+
+        <!--
         <div class="swiper-container " id="nameCard">
             <div class="swiper-wrapper">
                 <div class="swiper-slide">
@@ -45,28 +49,54 @@
                     <img src='./img/name_card_cot.svg' />
                 </div>         
             </div>
-            <!-- 如果需要分页器 -->
+            
             <div class="swiper-pagination"></div>
 
 
         </div>
+        -->
+
     </div>
 
 
 
     <script>
-        var index=0;
-        var cardFrom={
-            0:{
-                from:'mixlab',
-                gif:'1'
+        var cardFrom = {
+            0: {
+                from: 'mixlab',
+                gif: '1',
+                vision: '无界社区，让每个人无限可能'
             },
-            1:{
-                from:'cot',
-                gif:'0'
+            1: {
+                from: 'cot',
+                gif: '0',
+                vision: '基于多链式区块链的通用智能硬件平台'
             }
         };
+
+        var cardsEl = document.getElementById('mix-name-cards');
+
+        var cards = Object.keys(cardFrom);
+
+        for (let i = 0; i < cards.length; i++) {
+            var card = cards[i];
+            var cf = cardFrom[card];
+
+            var a = document.createElement('a');
+            a.className = 'mix-card';
+            a.setAttribute('href', './page/nameCard.html?from=' + cf.from + '&gif=' + cf.gif);
+            a.innerHTML = '<h4 class="mix-title">' + cf.from.toUpperCase() + '</h4><p>' + cf.vision + '</p>';
+            cardsEl.appendChild(a);
+
+
+        };
+
+        // var index=0;
+
+
+        /*
         var nameCardEl=document.getElementById('nameCard');
+
         nameCardEl.addEventListener('click',function(){
            // console.log(index)
            var cf=cardFrom[index];
@@ -86,8 +116,7 @@
                             index=this.activeIndex;
                         }}
                     });
-
-        
+*/
     </script>
 
 
