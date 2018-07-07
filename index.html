@@ -57,13 +57,20 @@
     <script>
         var index=0;
         var cardFrom={
-            0:'mixlab',
-            1:'cot'
+            0:{
+                from:'mixlab',
+                gif:'1'
+            },
+            1:{
+                from:'cot',
+                gif:'0'
+            }
         };
         var nameCardEl=document.getElementById('nameCard');
         nameCardEl.addEventListener('click',function(){
            // console.log(index)
-            window.location.href='./page/nameCard.html?from='+cardFrom[index];
+           var cf=cardFrom[index];
+            window.location.href='./page/nameCard.html?from='+cf.from+'&gif='+cf.gif;
         });
 
         var mySwiper = new Swiper('.swiper-container', {

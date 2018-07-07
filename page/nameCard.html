@@ -107,9 +107,6 @@
 
 
 
-
-
-
     var isInput = true;
     var nameEl = document.getElementById('name'),
         titleEl = document.getElementById('title'),
@@ -123,6 +120,10 @@
 
     var inputDiv = document.getElementById('mix-input'),
         mainDiv = document.getElementById('main');
+
+   
+   urlOpts.gif=='0'?startGIFEl.style.display='none':null;
+    
 
     var avatar = null;
     avatarEl.addEventListener('change', handleFiles);
@@ -195,7 +196,9 @@
         } else {
             newInput();
             startEl.innerText = '生成名片';
-            startGIFEl.style.display = 'block';
+
+            urlOpts.gif=='1'?startGIFEl.style.display='block':null;
+             
         };
     };
 
@@ -321,22 +324,6 @@
                 mainDiv.appendChild(a);
                 loadingEl.style.display = "none";
             };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
         });
 
