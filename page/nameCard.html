@@ -375,6 +375,8 @@
         //  console.log(isGif,cardFrom)
         fabric.loadSVGFromURL(cardFrom, function (objects, options) {
 
+            options.isGif=isGif;
+
             var canvas = createCanvasFrame(userInput, todayInfo, objects, options);
 
             if (isGif) {
@@ -527,9 +529,18 @@
                     obj.drawText(textObj);
 
                 } else if (id == "detail") {
+
                     var fontSize = ~~objs[i].width * 0.08;
-                    var texts = userInput[id].slice(0, 240);;
+                    var texts = userInput[id].slice(0, 240);
                     var textNew = StringInsertByInterval(texts, '\n', 12);
+
+                    if (options.isGif) {
+                        fontSize = ~~objs[i].width * 0.15;
+                        texts=userInput[id].slice(0,30);
+                        textNew = StringInsertByInterval(texts, '\n', 8);
+                    };
+
+                    
                     //   console.log(textNew, texts)
 
                     var textObj = {
