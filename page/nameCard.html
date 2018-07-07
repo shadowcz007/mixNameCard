@@ -78,10 +78,10 @@
 
     var bg_wordcloud;
 
-    getWordcloud(window.innerWidth, todayInfo.color, function (bg) {
+  /*  getWordcloud(window.innerWidth, todayInfo.color, function (bg) {
         bg_wordcloud = bg;
     });
-
+*/
     var mixWord = new MixWord();
 
 
@@ -127,12 +127,6 @@
 
 
 
-    if (urlOpts.gif == '0') {
-        start();
-        startGIFEl.style.display = 'none';
-    } else {
-        startGIF();
-    };
 
 
 
@@ -287,12 +281,12 @@
 
         var isGif = (_type == 'gif') ? true : false;
         var cardFrom = cardFromUrl(urlOpts.from, isGif);
-
+        
         //  console.log(isGif,cardFrom)
         fabric.loadSVGFromURL(cardFrom, function (objects, options) {
-
+            
             var canvas = createCanvasFrame(userInput, todayInfo, objects, options);
-
+          
             var imgOpts = isGif ? {
                 format: 'png',
                 multiplier: 0.5
@@ -304,9 +298,10 @@
             ImageRes.style.marginTop = "2em";
 
             ImageRes.src = canvas.toDataURL(imgOpts);
+          
             //  mainDiv.appendChild(ImageRes);
             // console.log(ImageRes)
-
+            
             if (isGif) {
                 var obj = canvas.item(0);
                 var objs = obj.getObjects();
@@ -326,8 +321,9 @@
 
                 var ImageRes2 = new Image();
                 ImageRes2.src = canvas.toDataURL(imgOpts);
-
+               
                 setTimeout(function () {
+                   
                     createGIF(canvas.width * imgOpts.multiplier, canvas.height * imgOpts.multiplier, [
                         ImageRes, ImageRes2
                     ], function (gif) {
@@ -343,11 +339,11 @@
 
                         mainDiv.appendChild(a);
                         loadingEl.style.display = "none";
-                        canvas = null;
+                        //canvas = null;
 
                     });
 
-                }, 300);
+                }, 600);
             } else {
                 mainDiv.appendChild(ImageRes);
                 var a = document.createElement('a');
@@ -357,7 +353,7 @@
 
                 mainDiv.appendChild(a);
                 loadingEl.style.display = "none";
-                canvas = null;
+                //canvas = null;
             };
 
         });
@@ -668,6 +664,17 @@
         var str = ocArray.join('');
         return str;
     };
+
+
+
+    if (urlOpts.gif == '0') {
+        start();
+        startGIFEl.style.display = 'none';
+    } else {
+        startGIF();
+    };
+
+    
 </script>
 
 <script src="https://cdn.bootcss.com/smartcrop/2.0.3/smartcrop.min.js"></script>
