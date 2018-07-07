@@ -12,10 +12,30 @@ function getToday() {
     var _yearMonth = _date.getFullYear() + '/' + _month;
     
     var todayColor = randomColor();
-
+   
     return {
         date:_day,
         yearMonth:_yearMonth,
         color:todayColor
     }
+};
+
+
+function getTodayImage(cb){
+
+    if (window._todayImage) {
+        cb(window._todayImage);
+    }else{
+        var _img=document.createElement('img');
+        _img.setAttribute('crossOrigin','anonymous');
+        _img.onload=function(){
+            
+            window._todayImage=_img;
+
+            cb(_img);
+
+        };
+        _img.setAttribute('src','https://unsplash.it/600/600/?random');
+    };
+    
 };
