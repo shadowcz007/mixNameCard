@@ -257,15 +257,19 @@
 
             var canvas = createCanvasFrame(userInput, todayInfo, objects, options);
 
-
+            var imgOpts = isGif ? {
+                format: 'png',
+                multiplier: 0.5
+            } : null;
 
 
             var ImageRes = new Image();
             ImageRes.style.height = "70%";
             ImageRes.style.marginTop = "2em";
 
-            ImageRes.src = canvas.toDataURL();
+            ImageRes.src = canvas.toDataURL(imgOpts);
             //  mainDiv.appendChild(ImageRes);
+           // console.log(ImageRes)
 
             if (isGif) {
                 var obj = canvas.item(0);
@@ -285,15 +289,17 @@
                 };
 
                 var ImageRes2 = new Image();
-                ImageRes2.src = canvas.toDataURL();
+                ImageRes2.src = canvas.toDataURL(imgOpts);
 
                 setTimeout(function () {
-                    createGIF(canvas.width, canvas.height, [ImageRes, ImageRes2], function (gif) {
+                    createGIF(canvas.width * imgOpts.multiplier, canvas.height * imgOpts.multiplier, [
+                        ImageRes, ImageRes2
+                    ], function (gif) {
 
                         gif.style.width = "80%";
                         gif.style.marginTop = "2em";
                         mainDiv.appendChild(gif);
-                        
+
                         var a = document.createElement('a');
                         a.innerText = '长按图片保存\nMIXLAB提供技术支持';
                         a.className = "mix-info";
@@ -599,7 +605,19 @@
 
             };
 
-            img.src = URL.createObjectURL(blob);
+            //blob 2 base64
+            var blobToBase64 = function (blob, callback) {
+                var a = new FileReader();
+                a.onload = function (e) {
+                    callback(e.target.result);
+                }
+                a.readAsDataURL(blob);
+            };
+            
+            blobToBase64(blob, function (data) {
+                img.src = data;
+            });
+ 
 
         });
 
