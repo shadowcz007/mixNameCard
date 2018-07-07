@@ -515,7 +515,7 @@
                 } else if (id == "title") {
 
                     var texts = userInput[id].slice(0, 24);
-                    var textNew = StringInsertByInterval(texts, '\n', 14);
+                    var textNew = stringInsertByInterval(texts, '\n', 14);
 
                     var textObj = {
                         text: textNew,
@@ -532,12 +532,13 @@
 
                     var fontSize = ~~objs[i].width * 0.08;
                     var texts = userInput[id].slice(0, 240);
-                    var textNew = StringInsertByInterval(texts, '\n', 12);
+                    var textNew = stringInsertByInterval(texts, '\n', 12);
 
                     if (options.isGif) {
                         fontSize = ~~objs[i].width * 0.15;
                         texts=userInput[id].slice(0,30);
-                        textNew = StringInsertByInterval(texts, '\n', 8);
+                        textNew = stringInsertByInterval(texts, '\n', 8);
+                        console.log(textNew)
                     };
 
                     
@@ -755,7 +756,7 @@
     };
 
 
-    function StringInsertByInterval(oc, ic, re) {
+    function stringInsertByInterval(oc, ic, re) {
 
         var reStr = "(.{" + re + "}|.*)";
 
@@ -772,7 +773,10 @@
 
         }
         ocArray.pop();
-        var str = ocArray.join('');
+        
+
+        var str = ocArray.join('').replace(/\n{2,}/ig,'\n');
+
         return str;
     };
 
