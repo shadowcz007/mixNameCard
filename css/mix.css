@@ -102,7 +102,21 @@
     border: none;
     color: white;
 }
-
+.mix-btn-change{
+    width: 40%;
+    left: 30%;
+    height: 56px;
+    border-radius: 56px;
+    background: black;
+    color:white;
+    font-size: 1em;
+    font-weight: 300;
+    position: fixed;
+    bottom:88px;
+    text-align: center;
+    z-index: 99;
+    outline:none;
+}
 .mix-btn-color-pink{
     background:pink;
     color:black;

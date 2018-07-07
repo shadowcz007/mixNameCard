@@ -55,6 +55,9 @@
 
     </div>
 
+    <button class="mix-btn-change" id="changeStyle" onclick="changeStyle();">换一换</button>
+
+
     <div class="mix-btn-bottom">
         <button class="mix-btn" onclick="start();" id="start">日签名片</button>
         <button class="mix-btn mix-btn-color-greenyellow" onclick="edit();" id="edit">编辑</button>
@@ -70,7 +73,7 @@
 
     </div>
 </body>
-<script src="./js/config.js"></script>
+<script src="../js/config.js"></script>
 <script>
     //init
     var todayInfo = getToday();
@@ -78,7 +81,7 @@
 
     var bg_wordcloud;
 
-  /*  getWordcloud(window.innerWidth, todayInfo.color, function (bg) {
+    /*  getWordcloud(window.innerWidth, todayInfo.color, function (bg) {
         bg_wordcloud = bg;
     });
 */
@@ -106,7 +109,7 @@
         };
 
         if (!obj.name) {
-            obj=cardFrom[0];
+            obj = cardFrom[0];
         };
 
         return obj
@@ -124,14 +127,11 @@
     var editEl = document.getElementById('edit'),
         startEl = document.getElementById('start'),
         startGIFEl = document.getElementById('startGIF'),
+        changeEl = document.getElementById('changeStyle'),
         loadingEl = document.getElementById('loading');
 
     var inputDiv = document.getElementById('mix-input'),
         mainDiv = document.getElementById('main');
-
-
-
-
 
 
 
@@ -221,8 +221,8 @@
     };
 
 
-    function startGIF() {
-        create('gif');
+    function startGIF(_animateStyle) {
+        create('gif', _animateStyle || 'color');
         //  console.log('gif')
         // startEl.innerText = '编辑';
         startGIFEl.style.display = 'none';
@@ -238,7 +238,7 @@
         inputDiv.style.display = 'block';
         mainDiv.style.display = 'none';
         mainDiv.innerHTML = '';
-        
+
         startEl.style.display = 'block';
 
         if (urlOpts.gif == '0') {
@@ -247,10 +247,90 @@
             startGIFEl.style.display = 'block';
         };
 
-         
+
     };
 
 
+    function changeStyle() {
+
+        var animateStyle = {
+            0: 'color',
+            1: 'scale',
+            2: 'shake'
+        };
+
+        var index = ~~(changeEl.getAttribute('data-index') || 1);
+
+        //console.log(index)
+
+        startGIF(animateStyle[index]);
+
+        index += 1;
+
+        if (index >= Object.keys(animateStyle).length) {
+            index = 0;
+        };
+
+        changeEl.setAttribute('data-index', index);
+    };
+
+    function animateChange(type, objs) {
+        if (type == 'color') {
+            var colors = randomColor({
+                count: objs.length,
+                hue: todayInfo.color
+            });
+
+            for (var i = 0; i < objs.length; i++) {
+                var id = objs[i].id;
+                if (id && id == 'Oval') {
+                    objs[i].set('fill', colors[i]);
+                };
+            };
+            return objs
+        } else if (type == 'scale') {
+            for (var i = 0; i < objs.length; i++) {
+                var id = objs[i].id;
+                if (id && id == 'Oval') {
+                    // console.log(objs[i])
+                    var r = objs[i].radius;
+                    var nr = r * (0.2 + Math.max(0.1, Math.random()));
+                    var left = objs[i].left,
+                        top = objs[i].top;
+                    var nleft = left - (nr - r) / 2,
+                        ntop = top - (nr - r) / 2;
+
+                    objs[i].set('radius', nr);
+                    objs[i].set('left', nleft);
+                    objs[i].set('top', ntop);
+
+                };
+            };
+
+            return objs
+        } else if (type == 'shake') {
+            for (var i = 0; i < objs.length; i++) {
+                var id = objs[i].id;
+                if (id && id == 'Oval') {
+                    // console.log(objs[i])
+                    
+                    var n=(Math.random()>=0.5?1:-1)*20* (0.3 + Math.max(0.1, Math.random()));
+                     
+                    var left = objs[i].left,top=objs[i].top;
+                    var nleft = left - n,
+                        ntop=top-n;
+                       
+                    
+                    objs[i].set('left', nleft);
+                    objs[i].set('top', ntop);
+                    
+
+                };
+            };
+            return objs
+        }
+
+    };
 
 
     function cardFromUrl(_from, _isGif) {
@@ -267,7 +347,7 @@
     };
 
 
-    function create(_type) {
+    function create(_type, _animateStyle) {
 
         inputDiv.style.display = 'none';
         mainDiv.style.display = 'block';
@@ -285,12 +365,12 @@
 
         var isGif = (_type == 'gif') ? true : false;
         var cardFrom = cardFromUrl(urlOpts.name, isGif);
-        
+
         //  console.log(isGif,cardFrom)
         fabric.loadSVGFromURL(cardFrom, function (objects, options) {
-            
+
             var canvas = createCanvasFrame(userInput, todayInfo, objects, options);
-          
+
             var imgOpts = isGif ? {
                 format: 'png',
                 multiplier: 0.5
@@ -302,32 +382,22 @@
             ImageRes.style.marginTop = "2em";
 
             ImageRes.src = canvas.toDataURL(imgOpts);
-          
+
             //  mainDiv.appendChild(ImageRes);
             // console.log(ImageRes)
-            
+
             if (isGif) {
                 var obj = canvas.item(0);
                 var objs = obj.getObjects();
-                var colors = randomColor({
-                    count: objs.length,
-                    hue: todayInfo.color
-                });
 
-                for (var i = 0; i < objs.length; i++) {
-                    var id = objs[i].id;
+                objs = animateChange(_animateStyle, objs);
 
-                    if (id && id == 'Oval') {
-
-                        objs[i].set('fill', colors[i]);
-                    };
-                };
 
                 var ImageRes2 = new Image();
                 ImageRes2.src = canvas.toDataURL(imgOpts);
-               
+
                 setTimeout(function () {
-                   
+
                     createGIF(canvas.width * imgOpts.multiplier, canvas.height * imgOpts.multiplier, [
                         ImageRes, ImageRes2
                     ], function (gif) {
@@ -677,8 +747,6 @@
     } else {
         startGIF();
     };
-
-
 </script>
 
 <script src="https://cdn.bootcss.com/smartcrop/2.0.3/smartcrop.min.js"></script>
