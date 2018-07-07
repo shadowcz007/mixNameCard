@@ -279,8 +279,12 @@
         changeEl.setAttribute('data-index', index);
     };
 
-    function animateChange(type, objs) {
+    function animateChange(type, objs,target) {
+
+        var _target=target||'Oval';
+
         if (type == 'color') {
+           
             var colors = randomColor({
                 count: objs.length,
                 hue: todayInfo.color
@@ -288,16 +292,19 @@
 
             for (var i = 0; i < objs.length; i++) {
                 var id = objs[i].id;
-                if (id && id == 'Oval') {
-                    objs[i].set('fill', colors[i]);
+                if (id && id == _target) {
+                   // console.log(objs[i])
+                    //objs[i].set('fill', colors[i]);
+                    objs[i].set('fill', 'rgba(0,0,0,0.9)');
                 };
             };
             return objs
         } else if (type == 'scale') {
             for (var i = 0; i < objs.length; i++) {
                 var id = objs[i].id;
-                if (id && id == 'Oval') {
-                    // console.log(objs[i])
+                if (id && id == _target) {
+                    
+                   // console.log(objs[i])
                     var r = objs[i].radius;
                     var nr = r * (0.2 + Math.max(0.1, Math.random()));
                     var left = objs[i].left,
@@ -316,8 +323,8 @@
         } else if (type == 'shake') {
             for (var i = 0; i < objs.length; i++) {
                 var id = objs[i].id;
-                if (id && id == 'Oval') {
-                    // console.log(objs[i])
+                if (id && id == _target) {
+                  //  console.log(objs[i])
 
                     var n = (Math.random() >= 0.5 ? 1 : -1) * 20 * (0.3 + Math.max(0.1, Math.random()));
 
@@ -401,8 +408,8 @@
             if (isGif) {
                 var obj = canvas.item(0);
                 var objs = obj.getObjects();
-
-                objs = animateChange(_animateStyle, objs);
+    //console.log(objs)
+                objs = animateChange(_animateStyle, objs,'Oval');
 
 
                 var ImageRes2 = new Image();
@@ -473,9 +480,8 @@
                 textAlign: textObj.textAlign || 'left',
                 fontStyle: textObj.fontStyle || 'normal',
                 charSpacing: textObj.charSpacing || textObj.fontSize
-
             });
-
+            
             this.add(text);
 
         };
@@ -508,9 +514,10 @@
                         fontSize: objs[i].height * 1.1,
                         fontWeight: 700
                     };
-
+                    
+                    
                     obj.drawText(textObj);
-
+                    
 
                 } else if (id == "title") {
 
@@ -535,10 +542,10 @@
                     var textNew = stringInsertByInterval(texts, '\n', 12);
 
                     if (options.isGif) {
-                        fontSize = ~~objs[i].width * 0.15;
+                        fontSize = ~~objs[i].width * 0.08;
                         texts=userInput[id].slice(0,30);
                         textNew = stringInsertByInterval(texts, '\n', 8);
-                        console.log(textNew)
+                        //console.log(textNew)
                     };
 
                     
@@ -546,9 +553,9 @@
 
                     var textObj = {
                         text: textNew,
-                        fill: 'white',
-                        left: objs[i].left,
-                        top: objs[i].top + 30,
+                        fill: 'black',
+                        left: objs[i].left+fontSize*0.8,
+                        top: objs[i].top + fontSize*1.2,
                         fontSize: fontSize,
                         fontWeight: 100,
                         width: objs[i].width,
@@ -774,8 +781,17 @@
         }
         ocArray.pop();
         
+      
 
         var str = ocArray.join('').replace(/\n{2,}/ig,'\n');
+       // console.log(str,str.indexOf('，'),str[str.indexOf('，')-1]=='\n')
+
+        if (str.indexOf('，')&&str[str.indexOf('，')-1]=='\n') {
+            
+            var i=str.indexOf('，');
+            str=str.slice(0,i-1)+'，\n'+str.slice(i+1,str.length);
+             
+        };
 
         return str;
     };

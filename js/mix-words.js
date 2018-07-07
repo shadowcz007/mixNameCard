@@ -257,5 +257,6 @@ function MixWord() {
 
         var index = ~~(Math.random() * words.length);
         return words[index];
+        //return "你如果还不来的话，我想我大概会喜欢上人工智能吧。"
     };
 }
