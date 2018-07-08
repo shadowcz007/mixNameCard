@@ -1,5 +1,23 @@
 function MixWord() {
 
+    this.emojis=['😘','😅','😱','😪','💋','🐤'];
+
+    this.addEmoji=function(){
+        
+        var index = ~~(Math.random() * this.emojis.length);
+        return this.emojis[index];
+    };
+    this.checkEmoji=function(_e){
+        var isEmoji=false;
+        var emojis=this.emojis;
+        for (let i = 0; i <emojis.length; i++) {
+            var e = emojis[i];
+            if (_e==e) {
+                isEmoji=true;
+            }
+        };
+        return isEmoji
+    };
     this.getWord = function () {
         var words =[
             "掌握新技术，要善于学习，更要善于创新。",

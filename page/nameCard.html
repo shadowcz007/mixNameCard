@@ -79,7 +79,10 @@
 <script src="../js/config.js"></script>
 <script>
     //init
+    var mixWord = new MixWord();
+
     var todayInfo = getToday();
+
     document.querySelector('.mix-avatar-upload').style.backgroundColor = todayInfo.color;
 
     var bg_wordcloud;
@@ -88,7 +91,7 @@
         bg_wordcloud = bg;
     });
 */
-    var mixWord = new MixWord();
+
 
     //init url option
     var urlOpts = getOpts();
@@ -279,12 +282,58 @@
         changeEl.setAttribute('data-index', index);
     };
 
-    function animateChange(type, objs,target) {
 
-        var _target=target||'Oval';
+
+
+    function animateChangeForEmoji(type, objs) {
+      
+        if (type == 'color') {
+            for (let i = 0; i < objs.length; i++) {
+                var obj = objs[i];
+
+                if (mixWord.checkEmoji(obj.text)) {
+                    objs[i].left += 60;
+                    objs[i].angle += 10;
+                };
+
+            };
+            return objs
+        } else if (type == 'scale') {
+            for (let i = 0; i < objs.length; i++) {
+                var obj = objs[i];
+
+                if (mixWord.checkEmoji(obj.text)) {
+                    objs[i].flipX += 60;
+                    objs[i].angle += 10;
+                };
+
+            };
+            return objs
+        } else if (type == 'shake') {
+            for (let i = 0; i < objs.length; i++) {
+                var obj = objs[i];
+
+                if (mixWord.checkEmoji(obj.text)) {
+                    objs[i].angle += 10;
+                    objs[i].set('scaleX', objs[i].scaleX * 1.1);
+                    objs[i].set('scaleY', objs[i].scaleY * 1.1);
+                };
+
+            };
+            return objs
+        };
+
+    }
+
+
+
+    function animateChange(type, objs, target) {
+        console.log()
+        /*
+        var _target = target || 'Oval';
 
         if (type == 'color') {
-           
+
             var colors = randomColor({
                 count: objs.length,
                 hue: todayInfo.color
@@ -293,7 +342,7 @@
             for (var i = 0; i < objs.length; i++) {
                 var id = objs[i].id;
                 if (id && id == _target) {
-                   // console.log(objs[i])
+                    console.log(objs[i])
                     //objs[i].set('fill', colors[i]);
                     objs[i].set('fill', 'rgba(0,0,0,0.9)');
                 };
@@ -303,8 +352,8 @@
             for (var i = 0; i < objs.length; i++) {
                 var id = objs[i].id;
                 if (id && id == _target) {
-                    
-                   // console.log(objs[i])
+
+                    console.log(objs[i])
                     var r = objs[i].radius;
                     var nr = r * (0.2 + Math.max(0.1, Math.random()));
                     var left = objs[i].left,
@@ -324,7 +373,7 @@
             for (var i = 0; i < objs.length; i++) {
                 var id = objs[i].id;
                 if (id && id == _target) {
-                  //  console.log(objs[i])
+                 console.log(objs[i])
 
                     var n = (Math.random() >= 0.5 ? 1 : -1) * 20 * (0.3 + Math.max(0.1, Math.random()));
 
@@ -341,7 +390,9 @@
                 };
             };
             return objs
-        }
+        };
+
+        */
 
     };
 
@@ -382,7 +433,7 @@
         //  console.log(isGif,cardFrom)
         fabric.loadSVGFromURL(cardFrom, function (objects, options) {
 
-            options.isGif=isGif;
+            options.isGif = isGif;
 
             var canvas = createCanvasFrame(userInput, todayInfo, objects, options);
 
@@ -392,7 +443,7 @@
 
             var imgOpts = isGif ? {
                 format: 'png',
-                multiplier: 0.5
+                multiplier: 0.4
             } : null;
 
 
@@ -408,34 +459,40 @@
             if (isGif) {
                 var obj = canvas.item(0);
                 var objs = obj.getObjects();
-    //console.log(objs)
-                objs = animateChange(_animateStyle, objs,'Oval');
+                //console.log(objs)
 
+                //objs = animateChange(_animateStyle, objs, 'Oval');
 
+                objs = animateChangeForEmoji(_animateStyle, objs);
                 var ImageRes2 = new Image();
                 ImageRes2.src = canvas.toDataURL(imgOpts);
 
+                objs = animateChangeForEmoji(_animateStyle, objs);
+                var ImageRes3 = new Image();
+                ImageRes3.src = canvas.toDataURL(imgOpts);
+
+
                 setTimeout(function () {
-                    getTodayImage(function (todayImage) {
-                        createGIF(canvas.width * imgOpts.multiplier, canvas.height * imgOpts.multiplier, [
-                            ImageRes, ImageRes2
-                        ], todayImage, function (gif) {
 
-                            gif.style.width = "80%";
-                            gif.style.marginTop = "2em";
-                            mainDiv.appendChild(gif);
+                    createGIF(canvas.width * imgOpts.multiplier, canvas.height * imgOpts.multiplier, [
+                        ImageRes, ImageRes2, ImageRes3, ImageRes2
+                    ], null, function (gif) {
 
-                            var a = document.createElement('a');
-                            a.innerText = '长按图片分享\n\nMIXLAB提供技术支持\n公众号Design-AI-Lab';
-                            a.className = "mix-info";
-                            a.href = "./index.html";
+                        gif.style.width = "80%";
+                        gif.style.marginTop = "2em";
+                        mainDiv.appendChild(gif);
 
-                            mainDiv.appendChild(a);
-                            loadingEl.style.display = "none";
-                            //canvas = null;
+                        var a = document.createElement('a');
+                        a.innerText = '长按图片分享\n\nMIXLAB提供技术支持\n公众号Design-AI-Lab';
+                        a.className = "mix-info";
+                        a.href = "./index.html";
 
-                        });
+                        mainDiv.appendChild(a);
+                        loadingEl.style.display = "none";
+                        //canvas = null;
+
                     });
+
                 }, 500);
 
 
@@ -481,7 +538,12 @@
                 fontStyle: textObj.fontStyle || 'normal',
                 charSpacing: textObj.charSpacing || textObj.fontSize
             });
-            
+
+            // console.log(text)
+            textObj.isResize ? text.set('top', text.top + (textObj.height - text.height) / 2) : null;
+            //   (textObj.id&& textObj.id=='emoji')?text.set('id',textObj.id):null;
+
+
             this.add(text);
 
         };
@@ -505,36 +567,47 @@
                 if (id == 'name') {
 
                     objs[i].visible = false;
-                var color='white';
-                  
+                    var color = 'white';
+                    var fontSize = objs[i].height * 1.1;
+
+                    var top = objs[i].top + fontSize / 2;
+
+                    if (options.isGif) {
+                        color = 'black';
+                        fontSize = ~~objs[i].width / 10;
+                    };
 
                     var textObj = {
                         text: userInput[id].slice(0, 12),
                         fill: color,
                         left: objs[i].left,
-                        top: objs[i].top,
-                        fontSize: objs[i].height * 1.1,
+                        top: top,
+                        fontSize: fontSize,
                         fontWeight: 700
                     };
-                    
-                    
+
+
                     obj.drawText(textObj);
-                    
+
 
                 } else if (id == "title") {
 
                     var texts = userInput[id].slice(0, 24);
                     var textNew = stringInsertByInterval(texts, '\n', 14);
+                    var fontSize = objs[i].height * 0.7;
 
-                     var color='white';
-               
+                    var color = 'white';
+                    if (options.isGif) {
+                        color = 'black';
+
+                    };
 
                     var textObj = {
                         text: textNew,
-                        fill:color,
+                        fill: color,
                         left: objs[i].left,
-                        top: objs[i].top + 30,
-                        fontSize: objs[i].height * 0.6,
+                        top: objs[i].top + fontSize / 2,
+                        fontSize: fontSize,
                         fontWeight: 100
                     };
 
@@ -545,30 +618,38 @@
                     var fontSize = ~~objs[i].width * 0.08;
                     var texts = userInput[id].slice(0, 240);
                     var textNew = stringInsertByInterval(texts, '\n', 12);
-                    var color='white';
+                    var color = 'white';
+                    var top = objs[i].top;
+                    var fontStyle = 'Italic';
+                    var fontWeight = 100;
+
                     if (options.isGif) {
                         fontSize = ~~objs[i].width * 0.08;
-                        texts=userInput[id].slice(0,30);
-                        textNew = stringInsertByInterval(texts, '\n', 10);
-                        //console.log(textNew)
-                        color='black';
+                        texts = userInput[id].slice(0, 56);
+                        textNew = stringInsertByInterval(texts, '\n', 9);
+
+                        color = 'black';
+                        fontStyle = 'normal';
+                        fontWeight = 300;
                     };
 
-                    
+
                     //   console.log(textNew, texts)
 
                     var textObj = {
                         text: textNew,
                         fill: color,
-                        left: objs[i].left+fontSize*0.8,
-                        top: objs[i].top + fontSize,
+                        left: objs[i].left + fontSize * 0.8,
+                        top: top,
                         fontSize: fontSize,
-                        fontWeight: 100,
+                        fontWeight: fontWeight,
                         width: objs[i].width,
-                        lineHeight: 1.2,
+                        height: objs[i].height,
+                        lineHeight: 1.1,
                         textAlign: 'left',
-                        fontStyle: 'Italic',
-                        charSpacing: fontSize
+                        fontStyle: fontStyle,
+                        charSpacing: fontSize,
+                        isResize: true
                     };
 
                     obj.drawText(textObj);
@@ -654,9 +735,36 @@
                 if (id == 'Oval') {
                     // console.log(objs[i]);
 
-                    objs[i].set('fill', colors[i]);
+                    if (!options.isGif) {
+                        objs[i].set('fill', colors[i]);
+                    };
 
-                }
+
+                } else if (id == 'emoji') {
+                    objs[i].visible = false;
+
+                    var fontSize = objs[i].height;
+                    var _top = objs[i].top;
+
+
+                    var emoji = mixWord.addEmoji();
+                    todayInfo.emoji = emoji;
+                    var textEmoji = {
+                        text: emoji,
+                        fill: 'black',
+                        left: objs[i].left,
+                        top: _top,
+                        fontSize: fontSize,
+                        fontWeight: 100,
+                        width: objs[i].width,
+                        lineHeight: 1.2,
+                        charSpacing: fontSize
+                    };
+
+                    obj.drawText(textEmoji);
+
+
+                };
             };
 
         };
@@ -691,11 +799,11 @@
 
     function createCanvas(obj) {
 
-       // var color = 'rgba(0,0,0,1)';
+        // var color = 'rgba(0,0,0,1)';
 
         var canvasEl = document.createElement('canvas');
-        var canvas = new fabric.Canvas(canvasEl,{
-            backgroundColor:'rgba(0,0,0,1)'
+        var canvas = new fabric.Canvas(canvasEl, {
+            backgroundColor: 'rgba(0,0,0,1)'
         });
         canvas.setWidth(obj.width);
         canvas.setHeight(obj.height);
@@ -706,7 +814,7 @@
 
 
     function createGIF(w, h, frames, bg, cb) {
-         
+
 
         var t1 = (new Date()).getTime();
         console.log('-----开始-----' + 'w:' + w + ' , h:' + h)
@@ -728,20 +836,22 @@
             let ctx = canvas.getContext('2d');
             canvas.width = w;
             canvas.height = h;
-            ctx.fillStyle='#EBEBEB';
+            ctx.fillStyle = '#EBEBEB';
 
-            ctx.fillRect(0,0,w,h);
-           
-            ctx.drawImage(bg, 0, 0, w, h*0.32);
-            
-            ctx.fillStyle='rgba(0,0,0,0.6)';
-            ctx.fillRect(0,0,w,h*0.32);
+            ctx.fillRect(0, 0, w, h);
 
-           // document.body.appendChild(frames[index])
+            if (bg) {
+                ctx.drawImage(bg, 0, 0, w, h * 0.32);
+
+                ctx.fillStyle = 'rgba(0,0,0,0.6)';
+                ctx.fillRect(0, 0, w, h * 0.32);
+            };
+
+            // document.body.appendChild(frames[index])
             ctx.drawImage(frames[index], 0, 0, w, h);
             //document.body.appendChild(canvas)
             gif.addFrame(canvas, {
-                delay: 300
+                delay: 200
             });
 
         };
@@ -796,17 +906,17 @@
 
         }
         ocArray.pop();
-        
-      
 
-        var str = ocArray.join('').replace(/\n{2,}/ig,'\n');
-       // console.log(str,str.indexOf('，'),str[str.indexOf('，')-1]=='\n')
 
-        if (str.indexOf('，')&&str[str.indexOf('，')-1]=='\n') {
-            
-            var i=str.indexOf('，');
-            str=str.slice(0,i-1)+'，\n'+str.slice(i+1,str.length);
-             
+
+        var str = ocArray.join('').replace(/\n{2,}/ig, '\n');
+        // console.log(str,str.indexOf('，'),str[str.indexOf('，')-1]=='\n')
+
+        if (str.indexOf('，') && str[str.indexOf('，') - 1] == '\n') {
+
+            var i = str.indexOf('，');
+            str = str.slice(0, i - 1) + '，\n' + str.slice(i + 1, str.length);
+
         };
 
         return str;
