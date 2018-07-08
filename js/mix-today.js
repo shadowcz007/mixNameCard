@@ -35,7 +35,7 @@ function getTodayImage(cb){
             cb(_img);
 
         };
-        _img.setAttribute('src','https://unsplash.it/600/600/?random');
+        _img.setAttribute('src','https://unsplash.it/600/192/?random');
     };
     
 };
