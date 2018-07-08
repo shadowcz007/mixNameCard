@@ -691,20 +691,22 @@
 
     function createCanvas(obj) {
 
-        var color = 'rgba(0,0,0,1)';
+       // var color = 'rgba(0,0,0,1)';
 
         var canvasEl = document.createElement('canvas');
-        var canvas = new fabric.Canvas(canvasEl);
+        var canvas = new fabric.Canvas(canvasEl,{
+            backgroundColor:'rgba(0,0,0,1)'
+        });
         canvas.setWidth(obj.width);
         canvas.setHeight(obj.height);
-        canvas.setBackgroundColor(color);
+        //canvas.setBackgroundColor(color);
         canvas.add(obj);
         return canvas
     };
 
 
     function createGIF(w, h, frames, bg, cb) {
-        console.log(bg.naturalWidth)
+         
 
         var t1 = (new Date()).getTime();
         console.log('-----开始-----' + 'w:' + w + ' , h:' + h)
@@ -731,16 +733,16 @@
             ctx.fillRect(0,0,w,h);
            
             ctx.drawImage(bg, 0, 0, w, h*0.32);
-
+            
             ctx.fillStyle='rgba(0,0,0,0.6)';
             ctx.fillRect(0,0,w,h*0.32);
 
-
+           // document.body.appendChild(frames[index])
             ctx.drawImage(frames[index], 0, 0, w, h);
-
+            //document.body.appendChild(canvas)
             gif.addFrame(canvas, {
-                delay: 200
-            })
+                delay: 300
+            });
 
         };
 
