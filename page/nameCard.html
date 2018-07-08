@@ -27,6 +27,14 @@
             display: none;
             text-align: center;
         }
+        #mix-name{
+            display: none;
+        }
+
+        #editName{
+            display: none;
+        }
+
     </style>
 </head>
 
@@ -35,14 +43,17 @@
 
 
     <div class="mix-pannel" id="mix-input">
-
-        <p class="mix-title">头像</p>
-        <div class="mix-avatar-upload"></div>
-        <input class="mix-input" type="file" id="avatar" style="display: none">
-
-        <p class="mix-title">信息</p>
-        <input class="mix-input" type="text" id="name" placeholder="姓名">
-        <input class="mix-input" type="text" id="title" placeholder="职位／身份">
+        <button class="mix-btn-change" id="editName" onclick='displayNameEdit();'>修改个人信息</button>
+        <div id="mix-name">
+                <p class="mix-title">头像</p>
+                <div class="mix-avatar-upload"></div>
+                <input class="mix-input" type="file" id="avatar" style="display: none">
+        
+                <p class="mix-title">信息</p>
+                <input class="mix-input" type="text" id="name" placeholder="姓名">
+                <input class="mix-input" type="text" id="title" placeholder="职位／身份">
+        </div>
+        
 
         <textarea class="mix-textarea" name="" id="detail" cols="20" rows="10" placeholder="介绍／感悟／语录(选填）"></textarea>
 
@@ -204,7 +215,7 @@
     };
 
 
-
+    
 
 
     function start() {
@@ -252,10 +263,19 @@
             startGIFEl.style.display = 'none';
         } else {
             startGIFEl.style.display = 'block';
+            document.getElementById("editName").style.display="block";
+            document.getElementById("mix-name").style.display="none";
         };
 
         changeEl.style.display = 'none';
 
+        
+
+    };
+
+    function displayNameEdit(){
+        document.getElementById("mix-name").style.display="block";
+        document.getElementById("editName").style.display="none";
     };
 
 
