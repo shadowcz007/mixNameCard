@@ -387,7 +387,7 @@
             var canvas = createCanvasFrame(userInput, todayInfo, objects, options);
 
             if (isGif) {
-                canvas.setBackgroundColor('rgba(0,0,0,0.5)');
+                canvas.setBackgroundColor('rgba(0,0,0,0)');
             };
 
             var imgOpts = isGif ? {
@@ -505,10 +505,12 @@
                 if (id == 'name') {
 
                     objs[i].visible = false;
+                var color='white';
+                  
 
                     var textObj = {
                         text: userInput[id].slice(0, 12),
-                        fill: 'white',
+                        fill: color,
                         left: objs[i].left,
                         top: objs[i].top,
                         fontSize: objs[i].height * 1.1,
@@ -524,9 +526,12 @@
                     var texts = userInput[id].slice(0, 24);
                     var textNew = stringInsertByInterval(texts, '\n', 14);
 
+                     var color='white';
+               
+
                     var textObj = {
                         text: textNew,
-                        fill: 'white',
+                        fill:color,
                         left: objs[i].left,
                         top: objs[i].top + 30,
                         fontSize: objs[i].height * 0.6,
@@ -540,12 +545,13 @@
                     var fontSize = ~~objs[i].width * 0.08;
                     var texts = userInput[id].slice(0, 240);
                     var textNew = stringInsertByInterval(texts, '\n', 12);
-
+                    var color='white';
                     if (options.isGif) {
                         fontSize = ~~objs[i].width * 0.08;
                         texts=userInput[id].slice(0,30);
-                        textNew = stringInsertByInterval(texts, '\n', 8);
+                        textNew = stringInsertByInterval(texts, '\n', 10);
                         //console.log(textNew)
+                        color='black';
                     };
 
                     
@@ -553,9 +559,9 @@
 
                     var textObj = {
                         text: textNew,
-                        fill: 'black',
+                        fill: color,
                         left: objs[i].left+fontSize*0.8,
-                        top: objs[i].top + fontSize*1.2,
+                        top: objs[i].top + fontSize,
                         fontSize: fontSize,
                         fontWeight: 100,
                         width: objs[i].width,
@@ -720,7 +726,15 @@
             let ctx = canvas.getContext('2d');
             canvas.width = w;
             canvas.height = h;
-            ctx.drawImage(bg, 0, 0, w, h);
+            ctx.fillStyle='#eee';
+
+            ctx.fillRect(0,0,w,h);
+           
+            ctx.drawImage(bg, 0, 0, w, h*0.32);
+
+            ctx.fillStyle='rgba(0,0,0,0.6)';
+            ctx.fillRect(0,0,w,h*0.32);
+
 
             ctx.drawImage(frames[index], 0, 0, w, h);
 
