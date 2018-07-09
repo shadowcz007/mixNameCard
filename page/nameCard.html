@@ -620,7 +620,6 @@
                     var color = 'white';
                     if (options.isGif) {
                         color = 'black';
-
                     };
 
                     var textObj = {
@@ -695,7 +694,6 @@
 
                         var _top = objs[i].top + 44;
 
-
                         var rect = new fabric.Rect({
                             left: objs[i].left,
                             top: _top,
@@ -715,9 +713,15 @@
                         obj.add(rect);
                         obj.add(rect2);
 
+                        var color='white';
+
+                        if (options.isGif) {
+                            color='black';
+                        };
+
                         var textObj1 = {
                             text: todayInfo.date,
-                            fill: 'white',
+                            fill: color,
                             left: objs[i].left,
                             top: _top,
                             fontSize: fontSize,
@@ -729,7 +733,7 @@
 
                         var textObj2 = {
                             text: todayInfo.yearMonth,
-                            fill: 'white',
+                            fill: color,
                             left: objs[i].left,
                             top: _top + fontSize,
                             fontSize: fontSize * 0.3,
