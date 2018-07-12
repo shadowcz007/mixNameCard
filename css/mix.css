@@ -60,8 +60,20 @@
     background-color: #cecece;
     background-size: 100%;
 }
+
+.mix-user-image-upload{
+    height: 12em;
+    width: 12em;
+    border-radius: 0.2em;
+    background-color: #cecece;
+    background-size: 100%;
+}
 .mix-cards{
     padding: 0
+}
+
+.center{
+    text-align: center;
 }
 .mix-card{
     height: 88px;
@@ -74,11 +86,11 @@
     color:black;
 }
 .mix-pannel {
-    position: absolute;
-    left: 0;
+
     margin: 5%;
-    width: 90%;
-    background: #eee;
+    width: 86%;
+    padding: 2%;
+    background: white;
     height: 90%;
 }
 

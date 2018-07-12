@@ -261,6 +261,7 @@
 
         if (urlOpts.gif == '0') {
             startGIFEl.style.display = 'none';
+            displayNameEdit();
         } else {
             startGIFEl.style.display = 'block';
             document.getElementById("editName").style.display = "block";
@@ -651,7 +652,7 @@
 
                     if (options.isGif) {
                         fontSize = ~~objs[i].width * 0.08;
-                        texts = userInput[id].slice(0, 56);
+                        texts = userInput[id].slice(0, 44);
                         textNew = stringInsertByInterval(texts, '\n', 9);
 
                         color = 'black';
