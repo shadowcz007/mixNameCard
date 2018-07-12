@@ -315,10 +315,15 @@ function drawImageAndQrCode(_img, _all) {
     qrCode.onload = function () {
 
         ctx.drawImage(qrCode, _rect.x, _rect.y, _rect.w, _rect.w);
+        var resultImg=new Img();
+        resultImg.onload=function(){
+            resultEl.style.display = 'block';
+            resultEl.appendChild(resultImg);
+            loadingEl.style.display = "none";
+        };
 
-        resultEl.style.display = 'block';
-        resultEl.appendChild(canvas);
-        loadingEl.style.display = "none";
+        resultImg.src=canvas.toDataURL();
+        
     };
 
     qrCode.src = qrcodeImg.src;
