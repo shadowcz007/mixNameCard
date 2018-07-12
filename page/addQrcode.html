@@ -10,33 +10,37 @@
     <script src="https://cdn.bootcss.com/smartcrop/2.0.3/smartcrop.min.js"></script>
     <script src="https://cdn.bootcss.com/tracking.js/1.1.3/tracking-min.js"></script>
     <script src="https://cdn.bootcss.com/tracking.js/1.1.3/data/face-min.js"></script>
+    <script src="http://res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>
     <link rel="stylesheet" href="../css/mix.css">
     <style>
-        body{
+        body {
             background-color: #eee;
         }
+
         #userImg {
             margin-top: 24px;
         }
 
         #result {
-            position: absolute;
+            position: absolute;;
+            top: 0;
             left: 0;
             background-color: #eee;
-            top: 0;
+            overflow-y: scroll;
             display: none;
             padding-bottom: 98px;
         }
 
         #result img {
-            width: 48%;
+            width:48%;
             margin: 1%;
         }
     </style>
 </head>
 
 <body>
-    <div class="mix-pannel">
+
+    <div class="mix-pannel" id="main">
         <p class="mix-title">二维码</p>
         <div class="mix-avatar-upload" id="qrcodeImg"></div>
         <p class="mix-title">上传图片</p>
@@ -44,7 +48,8 @@
         <div class="mix-btn-bottom">
             <button class="mix-btn" onclick="startQrcode();" id="mainBtn">添加</button>
         </div>
-        <br><br>
+        <br>
+        <br>
     </div>
 
     <div id="loading">
@@ -52,8 +57,9 @@
     </div>
 
     <div id="result" class="mix-pannel">
-        <p class="mix-title">自动为你添加二维码</p>
-    </div>
+            <p class="mix-title">自动为你添加二维码</p>
+    
+        </div>
 
     <input class="mix-input" type="file" id="uploadImg" style="display: none">
     <script src="../js/autoQrcode.js"></script>
@@ -71,11 +77,14 @@
             userImg = new Image(),
             isResult = false;
 
+        var res=[];
+        
+
         if (localStorage.getItem('qrcodeImg')) {
             qrcodeImg.src = localStorage.getItem('qrcodeImg');
             qrcodeEl.style.backgroundImage = 'url(' + qrcodeImg.src + ')';
-        }else{
-            qrcodeImg.src='../img/qrcode.jpg';
+        } else {
+            qrcodeImg.src = '../img/qrcode.jpg';
             qrcodeEl.style.backgroundImage = 'url(' + qrcodeImg.src + ')';
         };
 
@@ -160,14 +169,20 @@
             } else {
                 mainBtn.innerText = '添加';
                 resultEl.style.display = 'none';
+                
                 isResult = false;
             };
 
         };
 
-
-
-       
+        resultEl.addEventListener('click',function(){
+                var nowurl=res[0];
+                wx.previewImage({
+                    current: nowurl,
+                    urls:res
+                });				
+            });
+        
     </script>
 </body>
 
