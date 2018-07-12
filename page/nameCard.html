@@ -27,14 +27,14 @@
             display: none;
             text-align: center;
         }
-        #mix-name{
+
+        #mix-name {
             display: none;
         }
 
-        #editName{
+        #editName {
             display: none;
         }
-
     </style>
 </head>
 
@@ -45,15 +45,15 @@
     <div class="mix-pannel" id="mix-input">
         <button class="mix-btn-change" id="editName" onclick='displayNameEdit();'>修改个人信息</button>
         <div id="mix-name">
-                <p class="mix-title">头像</p>
-                <div class="mix-avatar-upload"></div>
-                <input class="mix-input" type="file" id="avatar" style="display: none">
-        
-                <p class="mix-title">信息</p>
-                <input class="mix-input" type="text" id="name" placeholder="姓名">
-                <input class="mix-input" type="text" id="title" placeholder="职位／身份">
+            <p class="mix-title">头像</p>
+            <div class="mix-avatar-upload"></div>
+            <input class="mix-input" type="file" id="avatar" style="display: none">
+
+            <p class="mix-title">信息</p>
+            <input class="mix-input" type="text" id="name" placeholder="姓名">
+            <input class="mix-input" type="text" id="title" placeholder="职位／身份">
         </div>
-        
+
 
         <textarea class="mix-textarea" name="" id="detail" cols="20" rows="10" placeholder="介绍／感悟／语录(选填）"></textarea>
 
@@ -215,7 +215,7 @@
     };
 
 
-    
+
 
 
     function start() {
@@ -263,20 +263,20 @@
             startGIFEl.style.display = 'none';
         } else {
             startGIFEl.style.display = 'block';
-            document.getElementById("editName").style.display="block";
-            document.getElementById("mix-name").style.display="none";
-            
+            document.getElementById("editName").style.display = "block";
+            document.getElementById("mix-name").style.display = "none";
+
         };
 
         changeEl.style.display = 'none';
 
-        
+
 
     };
 
-    function displayNameEdit(){
-        document.getElementById("mix-name").style.display="block";
-        document.getElementById("editName").style.display="none";
+    function displayNameEdit() {
+        document.getElementById("mix-name").style.display = "block";
+        document.getElementById("editName").style.display = "none";
     };
 
 
@@ -307,7 +307,7 @@
 
 
     function animateChangeForEmoji(type, objs) {
-      
+
         if (type == 'color') {
             for (let i = 0; i < objs.length; i++) {
                 var obj = objs[i];
@@ -349,8 +349,8 @@
 
 
     function animateChange(type, objs, target) {
-        console.log()
-        /*
+        console.log(target)
+
         var _target = target || 'Oval';
 
         if (type == 'color') {
@@ -394,7 +394,7 @@
             for (var i = 0; i < objs.length; i++) {
                 var id = objs[i].id;
                 if (id && id == _target) {
-                 console.log(objs[i])
+                    console.log(objs[i])
 
                     var n = (Math.random() >= 0.5 ? 1 : -1) * 20 * (0.3 + Math.max(0.1, Math.random()));
 
@@ -413,7 +413,7 @@
             return objs
         };
 
-        */
+
 
     };
 
@@ -445,6 +445,8 @@
             avatar: avatar || 'none'
         };
 
+
+
         localStorage.setItem('userInput', JSON.stringify(userInput));
 
 
@@ -474,29 +476,25 @@
 
             ImageRes.src = canvas.toDataURL(imgOpts);
 
-            //  mainDiv.appendChild(ImageRes);
+           // mainDiv.appendChild(ImageRes);
             // console.log(ImageRes)
 
             if (isGif) {
                 var obj = canvas.item(0);
                 var objs = obj.getObjects();
-                //console.log(objs)
-
-                //objs = animateChange(_animateStyle, objs, 'Oval');
-
-                objs = animateChangeForEmoji(_animateStyle, objs);
                 var ImageRes2 = new Image();
-                ImageRes2.src = canvas.toDataURL(imgOpts);
+                
 
+                //console.log(objs)
                 objs = animateChangeForEmoji(_animateStyle, objs);
-                var ImageRes3 = new Image();
-                ImageRes3.src = canvas.toDataURL(imgOpts);
-
+        
+                ImageRes2.src = canvas.toDataURL(imgOpts);
+               // mainDiv.appendChild(ImageRes3);
 
                 setTimeout(function () {
-
+                    
                     createGIF(canvas.width * imgOpts.multiplier, canvas.height * imgOpts.multiplier, [
-                        ImageRes, ImageRes2, ImageRes3, ImageRes2
+                        ImageRes, ImageRes2
                     ], null, function (gif) {
 
                         gif.style.width = "80%";
@@ -557,10 +555,11 @@
                 lineHeight: textObj.lineHeight || 1,
                 textAlign: textObj.textAlign || 'left',
                 fontStyle: textObj.fontStyle || 'normal',
-                charSpacing: textObj.charSpacing || textObj.fontSize
+                charSpacing: textObj.charSpacing || textObj.fontSize,
+                shadow: textObj.shadow || ''
             });
 
-            // console.log(text)
+            console.log(text)
             textObj.isResize ? text.set('top', text.top + (textObj.height - text.height) / 2) : null;
             //   (textObj.id&& textObj.id=='emoji')?text.set('id',textObj.id):null;
 
@@ -577,7 +576,14 @@
             hue: todayInfo.color
         });
 
-        //console.log(avatar)
+        var userInputIs = {
+            name: false,
+            title: false,
+            detail: false,
+            avatar: false
+        };
+
+        //console.log(objs)
         for (var i = 0; i < objs.length; i++) {
 
             var id = objs[i].id;
@@ -633,7 +639,7 @@
 
                     obj.drawText(textObj);
 
-                } else if (id == "detail") {
+                } else if (id == "detail" && userInputIs.detail == false) {
 
                     var fontSize = ~~objs[i].width * 0.08;
                     var texts = userInput[id].slice(0, 240);
@@ -650,7 +656,8 @@
 
                         color = 'black';
                         fontStyle = 'normal';
-                        fontWeight = 300;
+                        fontWeight = 200;
+                        userInputIs.detail = true;
                     };
 
 
@@ -713,10 +720,10 @@
                         obj.add(rect);
                         obj.add(rect2);
 
-                        var color='white';
+                        var color = 'white';
 
                         if (options.isGif) {
-                            color='black';
+                            color = 'black';
                         };
 
                         var textObj1 = {
@@ -766,6 +773,7 @@
 
 
                 } else if (id == 'emoji') {
+                   
                     objs[i].visible = false;
 
                     var fontSize = objs[i].height;
@@ -774,6 +782,7 @@
 
                     var emoji = mixWord.addEmoji();
                     todayInfo.emoji = emoji;
+
                     var textEmoji = {
                         text: emoji,
                         fill: 'black',
@@ -872,7 +881,7 @@
                 ctx.fillRect(0, 0, w, h * 0.32);
             };
 
-            // document.body.appendChild(frames[index])
+           // document.body.appendChild(frames[index])
             ctx.drawImage(frames[index], 0, 0, w, h);
             //document.body.appendChild(canvas)
             gif.addFrame(canvas, {
