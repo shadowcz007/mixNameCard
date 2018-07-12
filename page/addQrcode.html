@@ -1,37 +1,174 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-        <meta charset="utf-8">
-        <meta name="apple-moblie-web-app-capable" content="yes">
-        <meta name="viewport" content="initial-scale=1,maximum-scale=1,minimum-scale=1,user-scalable=no">
-        <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta charset="utf-8">
+    <meta name="apple-moblie-web-app-capable" content="yes">
+    <meta name="viewport" content="initial-scale=1,maximum-scale=1,minimum-scale=1,user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
     <title>自动添加二维码</title>
+    <script src="https://cdn.bootcss.com/smartcrop/2.0.3/smartcrop.min.js"></script>
+    <script src="https://cdn.bootcss.com/tracking.js/1.1.3/tracking-min.js"></script>
+    <script src="https://cdn.bootcss.com/tracking.js/1.1.3/data/face-min.js"></script>
     <link rel="stylesheet" href="../css/mix.css">
     <style>
-        #userImg{
+        body{
+            background-color: #eee;
+        }
+        #userImg {
             margin-top: 24px;
+        }
+
+        #result {
+            position: absolute;
+            left: 0;
+            background-color: #eee;
+            top: 0;
+            display: none;
+            padding-bottom: 98px;
+        }
+
+        #result canvas {
+            width: 48%;
+            margin: 1%;
         }
     </style>
 </head>
+
 <body>
-        <div class="mix-pannel">
-                <p class="mix-title">二维码</p>
-                <div class="mix-avatar-upload" id="qrcodeImg"></div>
-        
-                <div class="mix-user-image-upload" id="userImg"></div>
-
+    <div class="mix-pannel">
+        <p class="mix-title">二维码</p>
+        <div class="mix-avatar-upload" id="qrcodeImg"></div>
+        <p class="mix-title">上传图片</p>
+        <div class="mix-user-image-upload" id="userImg"></div>
+        <div class="mix-btn-bottom">
+            <button class="mix-btn" onclick="startQrcode();" id="mainBtn">添加</button>
         </div>
-        
+        <br><br>
+    </div>
 
-        <input class="mix-input" type="file" id="uploadImg" style="display: none">
+    <div id="loading">
+        <h4>Loading</h4>
+    </div>
 
-        <script>
-        
-    var uploadImgEl = document.getElementById('uploadImg'),
-        uploadImg_displayEl = document.querySelector('.mix-avatar-upload');
+    <div id="result" class="mix-pannel">
+        <p class="mix-title">自动为你添加二维码</p>
+    </div>
+
+    <input class="mix-input" type="file" id="uploadImg" style="display: none">
+    <script src="../js/autoQrcode.js"></script>
+    <script>
+        var uploadImgEl = document.getElementById('uploadImg'),
+            qrcodeEl = document.querySelector('#qrcodeImg'),
+            userImgEl = document.querySelector('#userImg'),
+            loadingEl = document.getElementById('loading');
+
+        var mainBtn = document.getElementById('mainBtn'),
+            resultEl = document.getElementById('result');
+
+        var imgType = 0,
+            qrcodeImg = new Image(),
+            userImg = new Image(),
+            isResult = false;
+
+        if (localStorage.getItem('qrcodeImg')) {
+            qrcodeImg.src = localStorage.getItem('qrcodeImg');
+            qrcodeEl.style.backgroundImage = 'url(' + qrcodeImg.src + ')';
+        }else{
+            qrcodeImg.src='../img/qrcode.jpg';
+            qrcodeEl.style.backgroundImage = 'url(' + qrcodeImg.src + ')';
+        };
 
 
-        
-        </script>
+        uploadImgEl.addEventListener('change', handleFiles);
+        qrcodeEl.addEventListener('click', function () {
+            uploadImgEl.click();
+            imgType = 0;
+        });
+
+        userImgEl.addEventListener('click', function () {
+            uploadImgEl.click();
+            imgType = 1;
+        });
+
+
+        function handleFiles(files) {
+            //  console.log(files)
+            if (files.target.files.length > 0) {
+                var file = files.target.files[0];
+                if (
+                    typeof FileReader !== 'undefined' &&
+                    file.type.indexOf('image') != -1
+                ) {
+                    var reader = new FileReader();
+                    reader.onload = function (evt) {
+                        load(evt.target.result);
+                    };
+                    reader.readAsDataURL(file);
+                }
+            }
+        };
+
+        function load(src) {
+            //   console.log(src)
+
+            var img = new Image();
+            img.onload = function () {
+                if (imgType == 0) {
+                    qrcodeEl.style.backgroundImage = 'url(' + src + ')';
+                    localStorage.setItem('qrcodeImg', src);
+                    qrcodeImg.src = src;
+                } else {
+                    userImgEl.style.backgroundImage = 'url(' + src + ')';
+                    userImg.src = src;
+                };
+                /*
+                            smartcrop.crop(img, {
+                                width: avatarSize,
+                                height: avatarSize
+                            }).then(function (result) {
+                                // console.log(result);
+                                var selectedCrop = result.topCrop;
+                                var can = document.createElement('canvas'),
+                                    c = can.getContext('2d');
+                                can.width = avatarSize;
+                                can.height = avatarSize;
+                                c.fillStyle = "black";
+                                c.fillRect(0, 0, avatarSize, avatarSize);
+                                c.drawImage(img, selectedCrop.x, selectedCrop.y, selectedCrop.width, selectedCrop.height, 0,
+                                    0, can.width, can.height);
+                                //  console.log(can)
+                                var imgNew = new Image();
+                                imgNew.src = can.toDataURL();
+                                avatar = imgNew;
+                                avatar_displayEl.style.backgroundImage = 'url(' + imgNew.src + ')';
+                                //document.body.appendChild(imgNew)
+                            });
+                */
+
+            };
+            img.src = src;
+        };
+
+
+        function startQrcode() {
+            if (isResult == false) {
+                loadingEl.style.display = "block";
+                mainBtn.innerText = '修改图片';
+                drawAll(userImg);
+                isResult = true;
+            } else {
+                mainBtn.innerText = '添加';
+                resultEl.style.display = 'none';
+                isResult = false;
+            };
+
+        };
+
+
+
+       
+    </script>
 </body>
+
 </html>

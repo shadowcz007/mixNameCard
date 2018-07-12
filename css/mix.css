@@ -66,7 +66,9 @@
     width: 12em;
     border-radius: 0.2em;
     background-color: #cecece;
-    background-size: 100%;
+    background-size: 70%;
+    background-repeat: no-repeat;
+    background-position: center;
 }
 .mix-cards{
     padding: 0
