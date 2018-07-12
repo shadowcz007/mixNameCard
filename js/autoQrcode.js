@@ -299,8 +299,12 @@ function drawImageAndQrCode(_img, _all) {
 
     //  console.log(_faces)
 
-    canvas.width = _rect.maxW;
-    canvas.height = _rect.maxH;
+  
+
+    var tw=600;
+
+    canvas.width =_rect.maxW ;
+    canvas.height =_rect.maxH;
 
     ctx.drawImage(_img, 0, 0, canvas.width, canvas.height);
 
@@ -315,18 +319,15 @@ function drawImageAndQrCode(_img, _all) {
     qrCode.onload = function () {
 
         ctx.drawImage(qrCode, _rect.x, _rect.y, _rect.w, _rect.w);
-        var resultImg=new Image();
-        resultImg.onload=function(){
+        prescaleImage(canvas, 768, function (resultImg, scale) {
             resultEl.style.display = 'block';
             resultEl.appendChild(resultImg);
             loadingEl.style.display = "none";
          
             res.push(resultImg.src);
-           
-        };
+        });
 
-        resultImg.src=canvas.toDataURL();
-        
+       
     };
 
     qrCode.src = qrcodeImg.src;
