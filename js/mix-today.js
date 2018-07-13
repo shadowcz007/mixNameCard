@@ -1,3 +1,13 @@
+/*
+Copyright (c) 2018 shadow
+URL: https://shadowcz007.github.io/mixNameCard/index.html
+
+微信公众号Design-AI-Lab
+
+Licensed under the MIT license
+*/
+
+
 function getToday() {
     var _date = new Date();
     var _day = _date.getDate().toString(),

@@ -8,9 +8,10 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <title>自动添加二维码</title>
     <script src="https://cdn.bootcss.com/smartcrop/2.0.3/smartcrop.min.js"></script>
+    <script src="https://cdn.bootcss.com/color-thief/2.0.1/color-thief.min.js"></script>
     <script src="https://cdn.bootcss.com/tracking.js/1.1.3/tracking-min.js"></script>
     <script src="https://cdn.bootcss.com/tracking.js/1.1.3/data/face-min.js"></script>
-    <script src="http://res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>
+  
     <link rel="stylesheet" href="../css/mix.css">
     <style>
         body {
@@ -22,7 +23,8 @@
         }
 
         #result {
-            position: absolute;;
+            position: absolute;
+            ;
             top: 0;
             left: 0;
             background-color: #eee;
@@ -32,7 +34,7 @@
         }
 
         #result img {
-            width:48%;
+            width: 48%;
             margin: 1%;
         }
     </style>
@@ -51,18 +53,24 @@
         <br>
         <br>
     </div>
+ 
 
+    
     <div id="loading">
         <h4>Loading</h4>
     </div>
 
     <div id="result" class="mix-pannel">
-            <p class="mix-title">自动为你添加二维码</p>
-    
-        </div>
+        <p class="mix-title">自动为你添加二维码</p>
+
+    </div>
 
     <input class="mix-input" type="file" id="uploadImg" style="display: none">
-    <script src="../js/autoQrcode.js"></script>
+    <script src="../js/mix-auto-qrcode.js"></script>
+    <script src="../js/mix-image-color.js"></script>
+
+    <script src="https://res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>
+
     <script>
         var uploadImgEl = document.getElementById('uploadImg'),
             qrcodeEl = document.querySelector('#qrcodeImg'),
@@ -73,18 +81,21 @@
             resultEl = document.getElementById('result');
 
         var imgType = 0,
+            qrcodeImgOrigin=new Image(),
             qrcodeImg = new Image(),
             userImg = new Image(),
             isResult = false;
 
-        var res=[];
-        
+        var res = [];
+
 
         if (localStorage.getItem('qrcodeImg')) {
             qrcodeImg.src = localStorage.getItem('qrcodeImg');
+            qrcodeImgOrigin.src=qrcodeImg.src;
             qrcodeEl.style.backgroundImage = 'url(' + qrcodeImg.src + ')';
         } else {
-            qrcodeImg.src = '../img/qrcode.jpg';
+            qrcodeImg.src = '../img/qrcode.png';
+            qrcodeImgOrigin.src=qrcodeImg.src;
             qrcodeEl.style.backgroundImage = 'url(' + qrcodeImg.src + ')';
         };
 
@@ -123,13 +134,27 @@
 
             var img = new Image();
             img.onload = function () {
+
                 if (imgType == 0) {
                     qrcodeEl.style.backgroundImage = 'url(' + src + ')';
                     localStorage.setItem('qrcodeImg', src);
                     qrcodeImg.src = src;
+                    qrcodeImgOrigin.src=src;
                 } else {
+                    var mixImg = new MixImage(img);
+                    console.log(mixImg.colors)
+                    var _color=mixImg.colors.bgColor.toString();
                     userImgEl.style.backgroundImage = 'url(' + src + ')';
+                    userImgEl.style.backgroundColor =_color;
                     userImg.src = src;
+                  //  console.log(mixImg.colors.invertColor.luminance-mixImg.colors.main.luminance)
+
+                   // var abs2c=Math.abs(mixImg.colors.invertColor.luminance-mixImg.colors.main.luminance);
+    //console.log(mixImg.colors.frontColor,mixImg.colors.bgColor)
+                    var newQrcodeSrc=colorizeQrcode(qrcodeImgOrigin, mixImg.colors.frontColor.color,mixImg.colors.bgColor.color);
+                    qrcodeEl.style.backgroundImage = 'url(' + newQrcodeSrc + ')';
+                    qrcodeImg.src = newQrcodeSrc;
+                    qrcodeEl.style.backgroundColor='white';
                 };
                 /*
                             smartcrop.crop(img, {
@@ -169,20 +194,24 @@
             } else {
                 mainBtn.innerText = '添加';
                 resultEl.style.display = 'none';
-                
+
                 isResult = false;
             };
 
         };
 
-        resultEl.addEventListener('click',function(){
-                var nowurl=res[0];
-                wx.previewImage({
-                    current: nowurl,
-                    urls:res
-                });				
+        resultEl.addEventListener('click', function () {
+            var nowurl = res[0];
+            wx.previewImage({
+                current: nowurl,
+                urls: res
             });
-        
+        });
+
+
+
+
+
     </script>
 </body>
 

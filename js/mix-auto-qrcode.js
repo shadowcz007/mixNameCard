@@ -1,3 +1,13 @@
+/*
+Copyright (c) 2018 shadow
+URL: https://shadowcz007.github.io/mixNameCard/index.html
+
+微信公众号Design-AI-Lab
+
+Licensed under the MIT license
+*/
+
+
 const qrCode = [
     [1, 1, 0, 1, 1],
     [1, 0, 0, 0, 1],
@@ -299,35 +309,36 @@ function drawImageAndQrCode(_img, _all) {
 
     //  console.log(_faces)
 
-  
+    var tw = 800;
 
-    var tw=600;
-
-    canvas.width =_rect.maxW ;
-    canvas.height =_rect.maxH;
+    canvas.width = tw;
+    canvas.height = tw * _rect.maxH / _rect.maxW;
 
     ctx.drawImage(_img, 0, 0, canvas.width, canvas.height);
-
+    console.log('!!!!!--' + tw + ',' + canvas.width)
     /*
-    ctx.lineWidth = 12;
-    ctx.strokeStyle = "red";
+    ctx.lineWidth = 4;
+    ctx.strokeStyle = "white";
+    ctx.fillStyle='rgba(255,255,255,0.2)';
+    ctx.strokeRect(_rect.x, _rect.y, _rect.w, _rect.w);
+    ctx.fillRect(_rect.x, _rect.y, _rect.w, _rect.w);
+ */
 
-    ctx.strokeRect(_rect.x, _rect.y, _rect.w, _rect.h);
-*/
     var qrCode = new Image();
 
     qrCode.onload = function () {
 
-        ctx.drawImage(qrCode, _rect.x, _rect.y, _rect.w, _rect.w);
-        prescaleImage(canvas, 768, function (resultImg, scale) {
+        ctx.drawImage(qrCode, canvas.width * _rect.x / _rect.maxW, canvas.height * _rect.y / _rect.maxH, canvas.width * _rect.w / _rect.maxW, canvas.width * _rect.w / _rect.maxW);
+        var resultImg=new Image();
+        resultImg.onload=function(){
             resultEl.style.display = 'block';
             resultEl.appendChild(resultImg);
             loadingEl.style.display = "none";
-         
             res.push(resultImg.src);
-        });
+        };
 
-       
+        resultImg.src=canvas.toDataURL();
+    
     };
 
     qrCode.src = qrcodeImg.src;
@@ -424,4 +435,61 @@ async function cropImg(_img, _rect) {
     };
 
     return res
+};
+
+
+
+function colorizeQrcode(_img, _color, _bgColor, cb) {
+    var canvas = document.createElement('canvas');
+    var ctx = canvas.getContext('2d');
+
+    var w = _img.naturalWidth,
+        h = _img.naturalHeight;
+
+    canvas.width = w;
+    canvas.height = h;
+
+    ctx.drawImage(_img, 0, 0);
+
+    var imageDatas = ctx.getImageData(0, 0, w, h);
+
+    var dataArray = imageDatas.data;
+    for (var i = 0; i < dataArray.length; i += 4) {
+
+        var r = dataArray[i];
+
+        var g = dataArray[i + 1];
+
+        var b = dataArray[i + 2];
+
+        var a = dataArray[i + 3];
+
+        var sum = (r + g + b) / 3;
+
+
+        var result = parseInt((r + g + b) / 3);
+
+        if (result > 200) {
+
+            r = _bgColor[0]<=0?0:_bgColor[0];
+            g = _bgColor[1]<=0?0:_bgColor[1];
+            b = _bgColor[2]<=0?0:_bgColor[2];
+             
+        } else if (result < 55) {
+            r = _color[0];
+            g = _color[1];
+            b = _color[2];
+            
+        };
+
+        imageDatas.data[i] = r;
+        imageDatas.data[i + 1] = g;
+        imageDatas.data[i + 2] = b;
+         
+    };
+    ctx.putImageData(imageDatas, 0, 0);
+
+
+    return canvas.toDataURL();
+
 };
