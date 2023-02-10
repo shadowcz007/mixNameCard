@@ -242,11 +242,22 @@
                      imageData.data[i] = 255 - imageData.data[i];     
                      imageData.data[i+1] = 255 - imageData.data[i+1];     
                      imageData.data[i+2] = 255 - imageData.data[i+2]; 
-                    }  
-                     //将数据放回画布 
-                     context.putImageData(imageData, 0, 0);  
-                     //获取反转后的base64 
-                     var newBase64 = canvas.toDataURL('image/png');
+                  }  
+                   //将数据放回画布 
+                   context.putImageData(imageData, 0, 0);  
+                  
+            
+            var resultImg=new Image();
+            resultImg.onload=function(){
+                resultEl.style.display = 'block';
+                resultEl.appendChild(resultImg);
+                loadingEl.style.display = "none";
+                res.push(resultImg.src);
+            };
+
+            resultImg.src=canvas.toDataURL('image/png');
+
+
         }
 
 
