@@ -48,7 +48,8 @@
         <p class="mix-title">上传图片</p>
         <div class="mix-user-image-upload" id="userImg"></div>
         <div class="mix-btn-bottom">
-            <button class="mix-btn" onclick="startQrcode();" id="mainBtn">添加</button>
+            <button class="mix-btn" onclick="startQrcode();" id="mainBtn">添加二维码</button>
+            <button class="mix-btn" onclick="revertImage();" >图片反相</button>
         </div>
         <br>
         <br>
@@ -194,11 +195,22 @@
             } else {
                 mainBtn.innerText = '添加';
                 resultEl.style.display = 'none';
-
                 isResult = false;
             };
 
         };
+        
+        function revertImage(){
+            if (isResult == false) {
+                loadingEl.style.display = "block";
+             
+                drawAll(userImg);
+                isResult = true;
+            } else {
+                resultEl.style.display = 'none';
+                isResult = false;
+            };
+        }
 
         resultEl.addEventListener('click', function () {
             var nowurl = res[0];
@@ -209,6 +221,33 @@
         });
 
 
+        function revertImageRun(image){
+        
+            // 你可以使用JavaScript的Canvas API来实现图片的反相功能：  
+                //设置一个画布元素 
+                var canvas = document.createElement('canvas');  
+               
+                //设置画布和图片的大小 
+                canvas.width = image.width; 
+                canvas.height = image.height;  
+                //上下文对象，用来操作Canvas 
+                var context = canvas.getContext('2d'); 
+                 //将图片放在画布上 
+                 context.drawImage(image, 0, 0);  
+                 //从画布上获取图像数据 
+                 var imageData = context.getImageData(0, 0, canvas.width, canvas.height);  
+                 //将图像数据应用到每个像素上 
+                 for (var i = 0; i < imageData.data.length; i += 4) {     
+                    // 保留 Alpha 通道，但将 RGB 反转    
+                     imageData.data[i] = 255 - imageData.data[i];     
+                     imageData.data[i+1] = 255 - imageData.data[i+1];     
+                     imageData.data[i+2] = 255 - imageData.data[i+2]; 
+                    }  
+                     //将数据放回画布 
+                     context.putImageData(imageData, 0, 0);  
+                     //获取反转后的base64 
+                     var newBase64 = canvas.toDataURL('image/png');
+        }
 
 
 
